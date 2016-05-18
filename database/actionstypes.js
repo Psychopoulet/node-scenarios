@@ -3,7 +3,7 @@
 
 // private
 
-	var _sSelectQuery = "SELECT id, code, name FROM actionstypes";
+	var _sSelectQuery = "SELECT id, name FROM actionstypes";
 
 // module
 
@@ -52,10 +52,6 @@ module.exports = class DBActionsTypes extends require(require('path').join(__dir
 						query += " AND actionstypes.id = :id";
 						options[':id'] = data.id;
 					}
-					if (data.code) {
-						query += " AND actionstypes.code = :code";
-						options[':code'] = data.code;
-					}
 					if (data.name) {
 						query += " AND actionstypes.name = :name";
 						options[':name'] = data.name;
@@ -88,16 +84,12 @@ module.exports = class DBActionsTypes extends require(require('path').join(__dir
 				if (!actiontype) {
 					reject('There is no data.');
 				}
-				else if (!actiontype.code) {
-					reject('There is no code.');
-				}
 				else if (!actiontype.name) {
 					reject('There is no name.');
 				}
 				else {
 
-					that.db.run("INSERT INTO actionstypes (code, name) VALUES (:code, :name);", {
-						':code': actiontype.code,
+					that.db.run("INSERT INTO actionstypes (name) VALUES (:name);", {
 						':name': actiontype.name
 					}, function(err) {
 
@@ -116,6 +108,42 @@ module.exports = class DBActionsTypes extends require(require('path').join(__dir
 
 		}
 
+		edit (actiontype) {
+
+			let that = this;
+			return new Promise(function(resolve, reject) {
+
+				if (!actiontype) {
+					reject('There is no data.');
+				}
+					else if (!actiontype.id) {
+						reject('The action type is incorrect.');
+					}
+				else if (!actiontype.name) {
+					reject('There is no name.');
+				}
+				else {
+
+					that.db.run("UPDATE actionstypes SET name = :name WHERE id = :id;", {
+						':id': actiontype.id,
+						':name': actiontype.name
+					}, function(err) {
+
+						if (err) {
+							reject((err.message) ? err.message : err);
+						}
+						else {
+							resolve(actiontype);
+						}
+
+					});
+
+				}
+
+			});
+
+		}
+
 		delete (actiontype) {
 			
 			let that = this;
@@ -124,9 +152,9 @@ module.exports = class DBActionsTypes extends require(require('path').join(__dir
 				if (!actiontype) {
 					reject('There is no data.');
 				}
-				else if (!actiontype.id) {
-					reject('The action type is incorrect.');
-				}
+					else if (!actiontype.id) {
+						reject('The action type is incorrect.');
+					}
 				else {
 
 					that.db.run("DELETE FROM actionstypes WHERE id = :id;", { ':id' : actiontype.id }, function(err) {

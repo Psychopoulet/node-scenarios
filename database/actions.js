@@ -11,7 +11,6 @@
 		" actions.params," +
 
 		" actionstypes.id AS actiontype_id," +
-		" actionstypes.code AS actiontype_code," +
 		" actionstypes.name AS actiontype_name" +
 
 	" FROM actions" +
@@ -29,12 +28,10 @@ module.exports = class DBActions extends require(require('path').join(__dirname,
 
 			action.type = {
 				id : action.actiontype_id,
-				code : action.actiontype_code,
 				name : action.actiontype_name
 			};
 
 				delete action.actiontype_id;
-				delete action.actiontype_code;
 				delete action.actiontype_name;
 
 			try {
@@ -96,10 +93,6 @@ module.exports = class DBActions extends require(require('path').join(__dirname,
 						if (data.type.id) {
 							query += " AND actionstypes.id = :actiontype_id";
 							options[':actiontype_id'] = data.type.id;
-						}
-						if (data.type.code) {
-							query += " AND actionstypes.code = :actiontype_code";
-							options[':actiontype_code'] = data.type.code;
 						}
 						if (data.type.name) {
 							query += " AND actionstypes.name = :actiontype_name";
@@ -187,6 +180,64 @@ module.exports = class DBActions extends require(require('path').join(__dirname,
 
 		}
 
+		edit (action) {
+
+			let that = this;
+			return new Promise(function(resolve, reject) {
+
+				if (!action) {
+					reject('There is no data.');
+				}
+					else if (!action.id) {
+						reject('The action is not valid.');
+					}
+				else if (!action.type) {
+					reject('There is no action type.');
+				}
+					else if (!action.type.id) {
+						reject('The action type is not valid.');
+					}
+				else if (!action.name) {
+					reject('There is no name.');
+				}
+				else {
+
+					if (!action.params) {
+						action.params = '';
+					}
+					else if ('object' === typeof action.params) {
+
+						try {
+							action.params = JSON.stringify(action.params);
+						}
+						catch(e) {
+							action.params = '';
+						}
+
+					}
+
+					that.db.run("UPDATE actions SET id_type = :id_type, name = :name, params = :params WHERE id = :id;", {
+						':id': action.id,
+						':id_type': action.type.id,
+						':name': action.name,
+						':params': action.params
+					}, function(err) {
+
+						if (err) {
+							reject((err.message) ? err.message : err);
+						}
+						else {
+							resolve(action);
+						}
+
+					});
+
+				}
+
+			});
+
+		}
+
 		delete (action) {
 			
 			let that = this;
@@ -195,9 +246,9 @@ module.exports = class DBActions extends require(require('path').join(__dirname,
 				if (!action) {
 					reject('There is no data.');
 				}
-				else if (!action.id) {
-					reject('The action is not valid.');
-				}
+					else if (!action.id) {
+						reject('The action is not valid.');
+					}
 				else {
 
 					that.db.run("DELETE FROM actions WHERE id = :id;", { ':id' : action.id }, function(err) {
@@ -219,19 +270,22 @@ module.exports = class DBActions extends require(require('path').join(__dirname,
 
 	// execute
 
-		bindExecuter(actiontypecode, executer) {
+		bindExecuter(actiontype, executer) {
 
 			let that = this;
 			return new Promise(function(resolve, reject) {
 
-				if ('string' !== typeof actiontypecode) {
-					reject("The action type's code is not a string.");
+				if (!actiontype) {
+					reject("There is no action type.");
 				}
+					else if (!actiontype.id) {
+						reject("The action type is incorrect.");
+					}
 				else if ('function' !== typeof executer) {
 					reject("The executer is not a function.");
 				}
 				else {
-					_tabExecuters[actiontypecode] = executer;
+					_tabExecuters[actiontype.id] = executer;
 					resolve();
 				}
 
@@ -250,18 +304,18 @@ module.exports = class DBActions extends require(require('path').join(__dirname,
 				else if (!action.type) {
 					reject('There is no action type.');
 				}
-					else if (!action.type.code) {
+					else if (!action.type.id) {
 						reject('The action type is not valid.');
 					}
 				else {
 
-					if (!_tabExecuters[action.type.code]) {
+					if (!_tabExecuters[action.type.id]) {
 						resolve();
 					}
 					else {
 
 						try {
-							_tabExecuters[action.type.code](action);
+							_tabExecuters[action.type.id](action);
 							resolve();
 						}
 						catch(e) {

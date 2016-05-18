@@ -29,7 +29,6 @@ describe('actions', function() {
 	it('should create data', function(done) {
 
 		container.get('actionstypes').add({
-			'code': 'code',
 			'name': 'test'
 		}).then(function(actiontype) {
 
@@ -85,22 +84,72 @@ describe('actions', function() {
 
 	});
 
-	it("should return all the data with the action type having the code 'code'", function(done) {
+	it("should return one data with the name 'test'", function(done) {
 
-		container.get('actions').search({ 'type': { 'code': 'code' } }).then(function(actions) {
+		container.get('actions').searchOne({ 'name': 'test' }).then(function(action) {
 
-			assert.strictEqual(1, actions.length, "Actions returned are not valid");
+			assert.notStrictEqual(null, action, "Action returned is not valid");
 			done();
 
 		}).catch(done);
 
 	});
 
-	it("should return one data with the name 'test'", function(done) {
+	it("should edit last inserted data", function(done) {
 
-		container.get('actions').searchOne({ 'name': 'test' }).then(function(action) {
+		container.get('actions').lastInserted().then(function(action) {
+			action.name = 'test2';
+			return container.get('actions').edit(action);
+		}).then(function(action) {
 
-			assert.notStrictEqual(null, action, "Action returned is not valid");
+			assert.strictEqual('test2', action.name, "Action returned is not valid");
+			done();
+
+		}).catch(done);
+
+	});
+
+	it("should bind wrong executer", function(done) {
+
+		container.get('actionstypes').lastInserted().then(function(actiontype) {
+			
+			container.get('actions').bindExecuter(actiontype).then(function(action) {
+				assert.ok(false, "Wrong executer does not generate error");
+				done();
+			}).catch(function(err) {
+				assert.strictEqual('string', typeof err, "Wrong executer generate incorrect error");
+				done();
+			});
+
+		}).catch(done);
+
+	});
+
+	it("should bind executer with wrong actiontype", function(done) {
+
+		container.get('actions').bindExecuter({}).then(function(action) {
+			assert.ok(false, "Wrong executer does not generate error");
+			done();
+		}).catch(function(err) {
+			assert.strictEqual('string', typeof err, "Wrong executer generate incorrect error");
+			done();
+		});
+
+	});
+
+	it("should bind executer", function(done) {
+
+		container.get('actionstypes').lastInserted().then(function(actiontype) {
+
+			return container.get('actions').bindExecuter(actiontype, function(action) {
+				assert.strictEqual('test2', action.name, "Action returned is not valid");
+			});
+
+		}).then(function() {
+			return container.get('actions').lastInserted();
+		}).then(function(action) {
+
+			container.get('actions').execute(action);
 			done();
 
 		}).catch(done);
