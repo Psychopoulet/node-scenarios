@@ -19,7 +19,7 @@
 
 // module
 
-module.exports = class DBActions extends require(require('path').join(__dirname, '_abstract.js')) {
+module.exports = class DBTriggers extends require(require('path').join(__dirname, '_abstract.js')) {
 
 	// formate data
 
@@ -50,7 +50,7 @@ module.exports = class DBActions extends require(require('path').join(__dirname,
 						reject((err.message) ? err.message : err);
 					}
 					else {
-						resolve((row) ? DBActions.formate(row) : null);
+						resolve((row) ? DBTriggers.formate(row) : null);
 					}
 
 				});
@@ -102,7 +102,7 @@ module.exports = class DBActions extends require(require('path').join(__dirname,
 					else {
 
 						rows.forEach(function(trigger, i) {
-							rows[i] = DBActions.formate(trigger);
+							rows[i] = DBTriggers.formate(trigger);
 						});
 
 						resolve(rows);

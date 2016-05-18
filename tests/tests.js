@@ -54,12 +54,19 @@ describe('init', function() {
 			_databaseExists(function(exists) {
 
 				assert.strictEqual(true, exists, "Database was not created.");
-				
-				assert.strictEqual(true, container.has('actions'), "Action is not instancied");
-				assert.strictEqual(true, container.get('actions') instanceof require(path.join(__dirname, '..', 'database', 'actions.js')), "Action is not a correct instance");
 
-				assert.strictEqual(true, container.has('actionstypes'), "ActionType is not instancied");
-				assert.strictEqual(true, container.get('actionstypes') instanceof require(path.join(__dirname, '..', 'database', 'actionstypes.js')), "ActionType is not a correct instance");
+				assert.strictEqual(true, container.has('scenarios'), "Scenarios is not instancied");
+				assert.strictEqual(true, container.get('scenarios') instanceof require(path.join(__dirname, '..', 'database', 'scenarios.js')), "Scenarios is not a correct instance");
+
+				assert.strictEqual(true, container.has('triggers'), "Triggers is not instancied");
+				assert.strictEqual(true, container.get('triggers') instanceof require(path.join(__dirname, '..', 'database', 'triggers.js')), "Triggers is not a correct instance");
+				assert.strictEqual(true, container.has('triggerstypes'), "TriggersTypes is not instancied");
+				assert.strictEqual(true, container.get('triggerstypes') instanceof require(path.join(__dirname, '..', 'database', 'triggerstypes.js')), "TriggersTypes is not a correct instance");
+
+				assert.strictEqual(true, container.has('actions'), "Actions is not instancied");
+				assert.strictEqual(true, container.get('actions') instanceof require(path.join(__dirname, '..', 'database', 'actions.js')), "Actions is not a correct instance");
+				assert.strictEqual(true, container.has('actionstypes'), "ActionsTypes is not instancied");
+				assert.strictEqual(true, container.get('actionstypes') instanceof require(path.join(__dirname, '..', 'database', 'actionstypes.js')), "ActionsTypes is not a correct instance");
 
 				done();
 				
@@ -67,9 +74,11 @@ describe('init', function() {
 
 		}).catch(done);
 
-	});
+	}).timeout(5000);
 
 });
+
+require(path.join(__dirname, 'testsScenarios.js'));
 
 require(path.join(__dirname, 'testsTriggersTypes.js'));
 require(path.join(__dirname, 'testsTriggers.js'));
