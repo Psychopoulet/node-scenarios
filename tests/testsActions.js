@@ -29,6 +29,7 @@ describe('actions', function() {
 	it('should create data', function(done) {
 
 		container.get('actionstypes').add({
+			'code': 'test',
 			'name': 'test'
 		}).then(function(actiontype) {
 
@@ -65,6 +66,17 @@ describe('actions', function() {
 	it("should return all the data with the name 'test'", function(done) {
 
 		container.get('actions').search({ 'name': 'test' }).then(function(actions) {
+
+			assert.strictEqual(1, actions.length, "Actions returned are not valid");
+			done();
+
+		}).catch(done);
+
+	});
+
+	it("should return all the data with the action type having the code 'test'", function(done) {
+
+		container.get('actions').search({ 'type': { 'code': 'test' } }).then(function(actions) {
 
 			assert.strictEqual(1, actions.length, "Actions returned are not valid");
 			done();

@@ -9,6 +9,8 @@
 			SimpleContainer = require('simplecontainer'),
 			sqlite3 = require('sqlite3'),
 
+			Triggers = require(path.join(__dirname, 'database', 'triggers.js')),
+			TriggersTypes = require(path.join(__dirname, 'database', 'triggerstypes.js')),
 			Actions = require(path.join(__dirname, 'database', 'actions.js')),
 			ActionsTypes = require(path.join(__dirname, 'database', 'actionstypes.js'));
 
@@ -130,7 +132,9 @@ module.exports = class SimpleScenarios {
 				if (_db) {
 
 					resolve(
-						_container	.set('actions', new Actions(db))
+						_container	.set('triggers', new Triggers(db))
+									.set('triggerstypes', new TriggersTypes(db))
+									.set('actions', new Actions(db))
 									.set('actionstypes', new ActionsTypes(db))
 					);
 
@@ -142,7 +146,9 @@ module.exports = class SimpleScenarios {
 						_db = db;
 
 						resolve(
-							_container	.set('actions', new Actions(db))
+							_container	.set('triggers', new Triggers(db))
+										.set('triggerstypes', new TriggersTypes(db))
+										.set('actions', new Actions(db))
 										.set('actionstypes', new ActionsTypes(db))
 						);
 				

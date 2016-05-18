@@ -71,6 +71,9 @@ describe('init', function() {
 
 });
 
+require(path.join(__dirname, 'testsTriggersTypes.js'));
+require(path.join(__dirname, 'testsTriggers.js'));
+
 require(path.join(__dirname, 'testsActionsTypes.js'));
 require(path.join(__dirname, 'testsActions.js'));
 
