@@ -3,7 +3,7 @@
 
 // private
 
-	var _sSelectQuery = "SELECT id, name FROM scenarios";
+	var _sSelectQuery = "SELECT id, name, active FROM scenarios";
 
 // module
 
@@ -56,6 +56,10 @@ module.exports = class DBScenarios extends require(require('path').join(__dirnam
 						query += " AND scenarios.name = :name";
 						options[':name'] = data.name;
 					}
+					if (data.active) {
+						query += " AND scenarios.active = :active";
+						options[':active'] = data.active;
+					}
 					
 				}
 
@@ -89,8 +93,11 @@ module.exports = class DBScenarios extends require(require('path').join(__dirnam
 				}
 				else {
 
-					that.db.run("INSERT INTO scenarios (name) VALUES (:name);", {
-						':name': scenario.name
+					scenario.active = (scenario.active) ? '1' : '0';
+
+					that.db.run("INSERT INTO scenarios (name, active) VALUES (:name, :active);", {
+						':name': scenario.name,
+						':active': scenario.active
 					}, function(err) {
 
 						if (err) {
@@ -124,9 +131,12 @@ module.exports = class DBScenarios extends require(require('path').join(__dirnam
 				}
 				else {
 
-					that.db.run("UPDATE scenarios SET name = :name WHERE id = :id;", {
+					scenario.active = (scenario.active) ? '1' : '0';
+
+					that.db.run("UPDATE scenarios SET name = :name, active = :active WHERE id = :id;", {
 						':id': scenario.id,
-						':name': scenario.name
+						':name': scenario.name,
+						':active': scenario.active
 					}, function(err) {
 
 						if (err) {
