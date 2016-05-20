@@ -17,28 +17,27 @@ describe('triggers', function() {
 
 	let container;
 
-	it('should init module', function(done) {
+	before(function() {
 
-		SimpleScenarios.init().then(function (_container) {
-			container = _container;
-			done();
-		}).catch(done);
+		return SimpleScenarios.delete().then(function () {
+			return SimpleScenarios.init().then(function (_container) {
+				container = _container;
+			})
+		});
 
+	});
+
+	after(function() {
+		return SimpleScenarios.delete();
 	});
 
 	it('should create data', function(done) {
 
-		container.get('triggerstypes').add({
+		container.get('triggers').add({
 			'code': 'test',
 			'name': 'test'
-		}).then(function(triggertype) {
-
-			return container.get('triggers').add({
-				'type': triggertype,
-				'name': 'test'
-			});
-
 		}).then(function(trigger) {
+			assert.strictEqual('test', trigger.code, "Trigger added is not valid (code)");
 			assert.strictEqual('test', trigger.name, "Trigger added is not valid (name)");
 			done();
 		}).catch(done);
@@ -48,7 +47,17 @@ describe('triggers', function() {
 	it('should return the last inserted data', function(done) {
 
 		container.get('triggers').lastInserted().then(function(trigger) {
+			assert.strictEqual('test', trigger.code, "Trigger added is not valid (code)");
 			assert.strictEqual('test', trigger.name, "Trigger added is not valid (name)");
+			done();
+		}).catch(done);
+
+	});
+
+	it("should return all the data with the code 'test'", function(done) {
+
+		container.get('triggers').search({ 'code': 'test' }).then(function(triggers) {
+			assert.strictEqual(1, triggers.length, "Triggers returned are not valid");
 			done();
 		}).catch(done);
 
@@ -57,43 +66,17 @@ describe('triggers', function() {
 	it("should return all the data with the name 'test'", function(done) {
 
 		container.get('triggers').search({ 'name': 'test' }).then(function(triggers) {
-
 			assert.strictEqual(1, triggers.length, "Triggers returned are not valid");
 			done();
-
 		}).catch(done);
 
 	});
 
-	it("should return all the data with the trigger type having the code 'test'", function(done) {
+	it("should return one data with the code 'test'", function(done) {
 
-		container.get('triggers').search({ 'type': { 'code': 'test' } }).then(function(triggers) {
-
-			assert.strictEqual(1, triggers.length, "Triggers returned are not valid");
-			done();
-
-		}).catch(done);
-
-	});
-
-	it("should return all the data with the trigger type having the name 'test'", function(done) {
-
-		container.get('triggers').search({ 'type': { 'name': 'test' } }).then(function(triggers) {
-
-			assert.strictEqual(1, triggers.length, "Triggers returned are not valid");
-			done();
-
-		}).catch(done);
-
-	});
-
-	it("should return one data with the name 'test'", function(done) {
-
-		container.get('triggers').searchOne({ 'name': 'test' }).then(function(trigger) {
-
+		container.get('triggers').searchOne({ 'code': 'test' }).then(function(trigger) {
 			assert.notStrictEqual(null, trigger, "Trigger returned is not valid");
 			done();
-
 		}).catch(done);
 
 	});

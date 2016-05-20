@@ -13,18 +13,24 @@ describe('scenarios', function() {
 
 	let container;
 
-	it('should init module', function(done) {
+	before(function() {
 
-		SimpleScenarios.init().then(function (_container) {
-			container = _container;
-			done();
-		}).catch(done);
+		return SimpleScenarios.delete().then(function () {
+			return SimpleScenarios.init().then(function (_container) {
+				container = _container;
+			})
+		});
 
+	});
+
+	after(function() {
+		return SimpleScenarios.delete();
 	});
 
 	it('should create data', function(done) {
 
 		container.get('scenarios').add({
+			'name': 'test',
 			'name': 'test'
 		}).then(function(scenario) {
 			assert.deepStrictEqual("test", scenario.name, "Scenario added is not valid (params)");
