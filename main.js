@@ -11,26 +11,24 @@
 
 			Scenarios = require(path.join(__dirname, 'database', 'scenarios.js')),
 			Triggers = require(path.join(__dirname, 'database', 'triggers.js')),
-			TriggersTypes = require(path.join(__dirname, 'database', 'triggerstypes.js')),
 			Actions = require(path.join(__dirname, 'database', 'actions.js')),
 			ActionsTypes = require(path.join(__dirname, 'database', 'actionstypes.js'));
 
 // private
 
-	var _db = null, _container = null;
+	var _db = null, _container = null, _dbFile = path.join(__dirname, 'database', 'database.sqlite3');
 
 	function _createDatabase() {
 
 		return new Promise(function(resolve, reject) {
 
 			let db = null,
-				dbFile = path.join(__dirname, 'database', 'database.sqlite3'),
 				createFile = path.join(__dirname, 'database', 'create.sql');
 
-			fs.stat(dbFile, function(err, stats) {
+			fs.stat(_dbFile, function(err, stats) {
 
 				if (!err && stats && stats.isFile()) {
-					db = new sqlite3.Database(dbFile);
+					db = new sqlite3.Database(_dbFile);
 					db.serialize(function() { resolve(db); });
 				}
 				else {
@@ -42,25 +40,36 @@
 						}
 						else {
 
-							fs.readFile(createFile, { 'encoding': 'utf8', 'flag': 'r' }, function(err, sql) {
+							fs.readFile(createFile, { 'encoding': 'utf8', 'flag': 'r' }, function(err, sqlfile) {
 
 								if (err) {
 									reject((err.message) ? err.message : err);
 								}
 								else {
 
-									db = new sqlite3.Database(dbFile);
+									db = new sqlite3.Database(_dbFile);
 
 									db.serialize(function() {
 
-										let queries = [];
+										let sql = '', queries = [];
+
+										sqlfile.replace(/\r/g, "\n").replace(/\n\n/g, "\n").split("\n").forEach(function(query) {
+
+											if (query) {
+
+												query  = query.trim();
+
+												if ('' != query && 0 > query.indexOf('--')) {
+													sql += query;
+												}
+
+											}
+
+										});
+
+										sqlfile = null;
 
 										sql.split(';').forEach(function(query) {
-
-											query = query.trim()
-														.replace(/--(.*)\s/g, "")
-														.replace(/\s/g, " ")
-														.replace(/  /g, " ");
 
 											if ('' != query) {
 												queries.push(query + ';');
@@ -135,7 +144,6 @@ module.exports = class SimpleScenarios {
 					resolve(
 						_container	.set('scenarios', new Scenarios(db))
 									.set('triggers', new Triggers(db))
-									.set('triggerstypes', new TriggersTypes(db))
 									.set('actions', new Actions(db))
 									.set('actionstypes', new ActionsTypes(db))
 					);
@@ -147,14 +155,26 @@ module.exports = class SimpleScenarios {
 
 						_db = db;
 
-						resolve(
-							_container	.set('scenarios', new Scenarios(db))
-										.set('triggers', new Triggers(db))
-										.set('triggerstypes', new TriggersTypes(db))
-										.set('actions', new Actions(db))
-										.set('actionstypes', new ActionsTypes(db))
-						);
-				
+						db.run("PRAGMA foreign_keys = ON;", [], function(err) {
+
+							if (err) {
+								SimpleScenarios.delete().then(function() { reject(err.message); }).catch(function() { reject(err.message); });
+							}
+							else {
+
+								resolve(
+									_container	.set('scenarios', new Scenarios(db))
+												.set('triggers', new Triggers(db))
+												.set('actions', new Actions(db))
+												.set('actionstypes', new ActionsTypes(db))
+								);
+
+							}
+
+						});
+
+					}).catch(function(err) {
+						SimpleScenarios.delete().then(function() { reject(err); }).catch(function() { reject(err); });
 					});
 					
 				}
@@ -171,14 +191,56 @@ module.exports = class SimpleScenarios {
 
 			if (_db) {
 
-				_db.close(function() {
-					_db = null; resolve();
+				_db.close(function(err) {
+
+					if (err) {
+						reject((err.message) ? err.message : err);
+					}
+					else {
+						_db = null;
+						resolve();
+					}
+
 				});
 
 			}
 			else {
 				resolve();
 			}
+
+		});
+
+	}
+
+	static delete() {
+
+		return new Promise(function(resolve, reject) {
+
+			fs.stat(_dbFile, function(err, stats) {
+
+				if (!(!err && stats && stats.isFile())) {
+					resolve();
+				}
+				else {
+
+					SimpleScenarios.release().then(function() {
+
+						fs.unlink(_dbFile, function(err) {
+
+							if (err) {
+								reject((err.message) ? err.message : err);
+							}
+							else {
+								resolve();
+							}
+
+						});
+
+					}).catch(reject);
+
+				}
+				
+			});
 
 		});
 
