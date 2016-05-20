@@ -3,18 +3,7 @@
 
 // private
 
-	var _sSelectQuery = "" +
-	" SELECT" +
-
-		" triggers.id," +
-		" triggers.name," +
-
-		" triggerstypes.id AS triggertype_id," +
-		" triggerstypes.name AS triggertype_name" +
-
-	" FROM triggers" +
-		" INNER JOIN triggerstypes ON triggerstypes.id = triggers.id_type";
-
+	var _sSelectQuery = "SELECT triggers.id, triggers.code, triggers.name FROM triggers";
 	var _tabExecuters = {};
 
 // module
@@ -79,22 +68,9 @@ module.exports = class DBTriggers extends require(require('path').join(__dirname
 						options[':name'] = data.name;
 					}
 
-					if (data.type) {
-
-						if (data.type.id) {
-							query += " AND triggerstypes.id = :triggertype_id";
-							options[':triggertype_id'] = data.type.id;
-						}
-						if (data.type.name) {
-							query += " AND triggerstypes.name = :triggertype_name";
-							options[':triggertype_name'] = data.type.name;
-						}
-						
-					}
-					
 				}
 
-				that.db.all(query + " ORDER BY triggerstypes.name ASC, triggers.name ASC;", options, function(err, rows) {
+				that.db.all(query + " ORDER BY triggers.name ASC;", options, function(err, rows) {
 					
 					if (err) {
 						reject((err.message) ? err.message : err);
@@ -125,19 +101,16 @@ module.exports = class DBTriggers extends require(require('path').join(__dirname
 				if (!trigger) {
 					reject('There is no data.');
 				}
-				else if (!trigger.type) {
-					reject('There is no trigger type.');
+				else if (!trigger.code) {
+					reject('There is no code.');
 				}
-					else if (!trigger.type.id) {
-						reject('The trigger type is not valid.');
-					}
 				else if (!trigger.name) {
 					reject('There is no name.');
 				}
 				else {
 
-					that.db.run("INSERT INTO triggers (id_type, name) VALUES (:id_type, :name);", {
-						':id_type': trigger.type.id,
+					that.db.run("INSERT INTO triggers (code, name) VALUES (:code, :name);", {
+						':code': trigger.code,
 						':name': trigger.name
 					}, function(err) {
 
@@ -167,20 +140,17 @@ module.exports = class DBTriggers extends require(require('path').join(__dirname
 					else if (!trigger.id) {
 						reject('The trigger is not valid.');
 					}
-				else if (!trigger.type) {
-					reject('There is no trigger type.');
+				else if (!trigger.code) {
+					reject('There is no code.');
 				}
-					else if (!trigger.type.id) {
-						reject('The trigger type is not valid.');
-					}
 				else if (!trigger.name) {
 					reject('There is no name.');
 				}
 				else {
 
-					that.db.run("UPDATE triggers SET id_type = :id_type, name = :name WHERE id = :id;", {
+					that.db.run("UPDATE triggers SET code = :code, name = :name WHERE id = :id;", {
 						':id': trigger.id,
-						':id_type': trigger.type.id,
+						':code': trigger.code,
 						':name': trigger.name
 					}, function(err) {
 
