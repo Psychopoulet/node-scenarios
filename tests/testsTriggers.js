@@ -7,10 +7,6 @@
 			
 			SimpleScenarios = require('../main.js');
 
-// private
-
-	var _dbFile = path.join(__dirname, '..', 'database', 'database.sqlite3');
-
 // tests
 
 describe('triggers', function() {
@@ -20,9 +16,9 @@ describe('triggers', function() {
 	before(function() {
 
 		return SimpleScenarios.delete().then(function () {
-			return SimpleScenarios.init().then(function (_container) {
-				container = _container;
-			})
+			return SimpleScenarios.init();
+		}).then(function (_container) {
+			container = _container;
 		});
 
 	});
@@ -89,6 +85,66 @@ describe('triggers', function() {
 		}).then(function(trigger) {
 
 			assert.strictEqual('test2', trigger.name, "Trigger returned is not valid");
+			done();
+
+		}).catch(done);
+
+	});
+
+	it("should link to scenario", function(done) {
+
+		container.get('scenarios').add({ name: 'test', code: 'test' }).then(function(scenario) {
+
+			container.get('triggers').lastInserted().then(function(trigger) {
+				return container.get('triggers').linkToScenario(scenario, trigger);
+			}).then(function() {
+				done();
+			}).catch(done);
+
+		}).catch(done);
+		
+
+	});
+
+	it("should get linked scenarios", function(done) {
+
+		container.get('triggers').lastInserted().then(function(trigger) {
+			return container.get('scenarios').search({ trigger: trigger });
+		}).then(function(scenarios) {
+
+			assert.strictEqual(true, scenarios instanceof Array, "Returned value is not an Array");
+			assert.strictEqual(1, scenarios.length, "There is no linked scenarios");
+			done();
+
+		}).catch(done);
+
+	});
+
+	it("should unlink to scenario", function(done) {
+
+		container.get('scenarios').lastInserted().then(function(scenario) {
+
+			container.get('triggers').lastInserted().then(function(trigger) {
+				return container.get('triggers').unlinkToScenario(scenario, trigger);
+			}).then(function() {
+				done();
+			}).catch(done);
+
+		}).catch(done);
+		
+
+	});
+
+	it("should get linked scenarios", function(done) {
+
+		container.get('triggers').lastInserted().then(function(trigger) {
+			return container.get('scenarios').search({ trigger: trigger });
+		}).then(function(scenarios) {
+
+			console.log(scenarios);
+
+			assert.strictEqual(true, scenarios instanceof Array, "Returned value is not an Array");
+			assert.strictEqual(0, scenarios.length, "There is no linked scenarios");
 			done();
 
 		}).catch(done);

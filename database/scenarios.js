@@ -3,7 +3,10 @@
 
 // private
 
-	var _sSelectQuery = "SELECT id, name, active FROM scenarios";
+	var _sSelectQuery = "SELECT";
+		_sSelectQuery += " scenarios.id, scenarios.id_start, scenarios.name, scenarios.active,";
+		_sSelectQuery += " junctions.id_action AS start_id_action, junctions.id_condition AS start_id_condition";
+	_sSelectQuery += " FROM scenarios LEFT JOIN junctions ON junctions.id = scenarios.id_start";
 
 // module
 
@@ -12,7 +15,28 @@ module.exports = class DBScenarios extends require(require('path').join(__dirnam
 	// formate data
 
 		static formate(scenario) {
+
+			if (scenario.id_start) {
+
+				scenario.start = {
+					id: scenario.id_start,
+					action: scenario.start_id_action,
+					condition: scenario.start_id_condition
+				};
+
+			}
+			else {
+				scenario.start = null;
+			}
+
+				delete scenario.id_start;
+				delete scenario.start_id_action;
+				delete scenario.start_id_condition;
+
+			scenario.active = (1 === scenario.active) ? true : false;
+
 			return scenario;
+
 		}
 
 	// read
@@ -46,6 +70,13 @@ module.exports = class DBScenarios extends require(require('path').join(__dirnam
 
 				if (data) {
 
+					if (data.trigger && data.trigger.id) {
+
+						query += " INNER JOIN scenariostriggers ON scenariostriggers.id_trigger = :id_trigger";
+						options[':id_trigger'] = data.trigger.id;
+
+					}
+
 					query += " WHERE 1 = 1";
 
 					if (data.id) {
@@ -60,6 +91,10 @@ module.exports = class DBScenarios extends require(require('path').join(__dirnam
 						query += " AND scenarios.active = :active";
 						options[':active'] = data.active;
 					}
+
+					if (data.trigger && !data.trigger.id) {
+						query += " AND 1 = 0";
+					}
 					
 				}
 
@@ -69,7 +104,13 @@ module.exports = class DBScenarios extends require(require('path').join(__dirnam
 						reject((err.message) ? err.message : err);
 					}
 					else {
+
+						rows.forEach(function(row, i) {
+							rows[i] = DBScenarios.formate(row);
+						});
+
 						resolve(rows);
+
 					}
 
 				});
@@ -93,11 +134,9 @@ module.exports = class DBScenarios extends require(require('path').join(__dirnam
 				}
 				else {
 
-					scenario.active = (scenario.active) ? '1' : '0';
-
 					that.db.run("INSERT INTO scenarios (name, active) VALUES (:name, :active);", {
 						':name': scenario.name,
-						':active': scenario.active
+						':active': (scenario.active && true === scenario.active || 1 == scenario.active) ? '1' : '0'
 					}, function(err) {
 
 						if (err) {
@@ -131,12 +170,10 @@ module.exports = class DBScenarios extends require(require('path').join(__dirnam
 				}
 				else {
 
-					scenario.active = (scenario.active) ? '1' : '0';
-
 					that.db.run("UPDATE scenarios SET name = :name, active = :active WHERE id = :id;", {
 						':id': scenario.id,
 						':name': scenario.name,
-						':active': scenario.active
+						':active': (scenario.active && true === scenario.active || 1 == scenario.active) ? '1' : '0'
 					}, function(err) {
 
 						if (err) {
@@ -168,6 +205,84 @@ module.exports = class DBScenarios extends require(require('path').join(__dirnam
 				else {
 
 					that.db.run("DELETE FROM scenarios WHERE id = :id;", { ':id' : scenario.id }, function(err) {
+
+						if (err) {
+							reject((err.message) ? err.message : err);
+						}
+						else {
+							resolve();
+						}
+
+					});
+
+				}
+
+			});
+
+		}
+
+		linkToTrigger (scenario, trigger) {
+
+			let that = this;
+			return new Promise(function(resolve, reject) {
+
+				if (!scenario) {
+					reject('There is no scenario data.');
+				}
+					else if (!scenario.id) {
+						reject('There is no valid scenario data.');
+					}
+				else if (!trigger) {
+					reject('There is no trigger data.');
+				}
+					else if (!trigger.id) {
+						reject('There is no valid trigger data.');
+					}
+				else {
+
+					that.db.run("INSERT INTO scenariostriggers (id_scenario, id_trigger) VALUES (:id_scenario, :id_trigger);", {
+						':id_scenario': scenario.id,
+						':id_trigger': trigger.id
+					}, function(err) {
+
+						if (err) {
+							reject((err.message) ? err.message : err);
+						}
+						else {
+							resolve();
+						}
+
+					});
+
+				}
+
+			});
+
+		}
+
+		unlinkToTrigger (scenario, trigger) {
+
+			let that = this;
+			return new Promise(function(resolve, reject) {
+
+				if (!scenario) {
+					reject('There is no scenario data.');
+				}
+					else if (!scenario.id) {
+						reject('There is no valid scenario data.');
+					}
+				else if (!trigger) {
+					reject('There is no trigger data.');
+				}
+					else if (!trigger.id) {
+						reject('There is no valid trigger data.');
+					}
+				else {
+
+					that.db.run("DELETE FROM scenariostriggers WHERE id_scenario = :id_scenario AND id_trigger = :id_trigger;", {
+						':id_scenario': scenario.id,
+						':id_trigger': trigger.id
+					}, function(err) {
 
 						if (err) {
 							reject((err.message) ? err.message : err);
