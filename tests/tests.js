@@ -8,18 +8,6 @@
 			
 			SimpleScenarios = require('../main.js');
 
-// private
-
-	var _dbFile = path.join(__dirname, '..', 'database', 'database.sqlite3');
-
-	function _databaseExists(callback) {
-
-		fs.stat(_dbFile, function(err, stats) {
-			callback(!err && stats && stats.isFile());
-		});
-
-	}
-
 // tests
 
 describe('init', function() {
@@ -32,9 +20,9 @@ describe('init', function() {
 
 		SimpleScenarios.init().then(function (container) {
 
-			_databaseExists(function(exists) {
+			fs.stat(path.join(__dirname, '..', 'database', 'database.sqlite3'), function(err, stats) {
 
-				assert.strictEqual(true, exists, "Database was not created.");
+				assert.strictEqual(true, (!err && stats && stats.isFile()), "Database was not created.");
 
 				assert.strictEqual(true, container.has('scenarios'), "Scenarios is not instancied");
 				assert.strictEqual(true, container.get('scenarios') instanceof require(path.join(__dirname, '..', 'database', 'scenarios.js')), "Scenarios is not a correct instance");
