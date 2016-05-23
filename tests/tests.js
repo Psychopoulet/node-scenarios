@@ -10,7 +10,7 @@
 
 // tests
 
-describe('init', function() {
+describe('main', function() {
 
 	before(function() {
 		return SimpleScenarios.delete();
@@ -43,17 +43,17 @@ describe('init', function() {
 
 	}).timeout(5000);
 
-});
-
-require(path.join(__dirname, 'testsScenarios.js'));
-require(path.join(__dirname, 'testsTriggers.js'));
-require(path.join(__dirname, 'testsActionsTypes.js'));
-require(path.join(__dirname, 'testsActions.js'));
-
-describe('delete', function() {
+	it('should release database', function() {
+		return SimpleScenarios.release();
+	});
 
 	it('should delete database', function() {
 		return SimpleScenarios.delete();
 	});
 
 });
+
+require(path.join(__dirname, 'testsTriggers.js'));
+require(path.join(__dirname, 'testsScenarios.js'));
+require(path.join(__dirname, 'testsActionsTypes.js'));
+require(path.join(__dirname, 'testsActions.js'));

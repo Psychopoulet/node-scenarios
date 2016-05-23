@@ -7,10 +7,6 @@
 			
 			SimpleScenarios = require('../main.js');
 
-// private
-
-	var _dbFile = path.join(__dirname, '..', 'database', 'database.sqlite3');
-
 // tests
 
 describe('actions', function() {
@@ -20,9 +16,9 @@ describe('actions', function() {
 	before(function() {
 
 		return SimpleScenarios.delete().then(function () {
-			return SimpleScenarios.init().then(function (_container) {
-				container = _container;
-			})
+			return SimpleScenarios.init();
+		}).then(function (_container) {
+			container = _container;
 		});
 
 	});
