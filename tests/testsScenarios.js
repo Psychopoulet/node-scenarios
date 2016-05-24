@@ -31,13 +31,11 @@ describe('scenarios', function() {
 
 		container.get('scenarios').add({
 			'name': 'test',
-			'active': true,
-			'start': null
+			'active': true
 		}).then(function(scenario) {
 
 			assert.strictEqual("test", scenario.name, "Scenario added is not valid (name)");
 			assert.strictEqual(true, scenario.active, "Scenario added is not valid (active)");
-			assert.strictEqual(null, scenario.start, "Scenario added is not valid (start)");
 
 			done();
 
@@ -45,7 +43,8 @@ describe('scenarios', function() {
 
 	});
 
-	it.skip('should create data with junction', function() { });
+	it.skip('should create data with action', function() { });
+	it.skip('should create data with condition', function() { });
 
 	it('should return the last inserted data', function(done) {
 

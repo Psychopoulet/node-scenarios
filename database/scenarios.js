@@ -1,39 +1,65 @@
 
 "use strict";
 
+// deps
+
+	const 	path = require('path'),
+			Actions = require(path.join(__dirname, 'actions.js'))/*,
+			Conditions = require(path.join(__dirname, 'conditions.js'))*/;
+
 // private
 
-	var _sSelectQuery = "SELECT";
-		_sSelectQuery += " scenarios.id, scenarios.id_start, scenarios.name, scenarios.active,";
-		_sSelectQuery += " junctions.id_action AS start_id_action, junctions.id_condition AS start_id_condition";
-	_sSelectQuery += " FROM scenarios LEFT JOIN junctions ON junctions.id = scenarios.id_start";
+	var _sSelectQuery = "" +
+	"SELECT" +
+
+		" scenarios.id," +
+		" scenarios.name," +
+		" scenarios.active," +
+
+		" actions.id AS action_id," +
+		" actions.name AS action_name," +
+		" actions.params AS action_params," +
+
+			" actionstypes.id AS actiontype_id," +
+			" actionstypes.name AS actiontype_name," +
+
+		" conditions.id AS condition_id," +
+		" conditions.name AS condition_name" +
+
+	" FROM scenarios" +
+		" LEFT JOIN junctions ON junctions.id = scenarios.id_start" +
+		" LEFT JOIN actions ON actions.id = junctions.id_action" +
+			" LEFT JOIN actionstypes ON actionstypes.id = actions.id_type" +
+		" LEFT JOIN conditions ON conditions.id = junctions.id_condition";
 
 // module
 
-module.exports = class DBScenarios extends require(require('path').join(__dirname, '_abstract.js')) {
+module.exports = class DBScenarios extends require(path.join(__dirname, '_abstract.js')) {
 
 	// formate data
 
 		static formate(scenario) {
 
-			if (scenario.id_start) {
-
-				scenario.start = {
-					id: scenario.id_start,
-					action: scenario.start_id_action,
-					condition: scenario.start_id_condition
-				};
-
-			}
-			else {
-				scenario.start = null;
-			}
-
-				delete scenario.id_start;
-				delete scenario.start_id_action;
-				delete scenario.start_id_condition;
-
 			scenario.active = (1 === scenario.active) ? true : false;
+
+			scenario.action = (scenario.action_id) ? Actions.formate({
+				'id': scenario.action_id,
+				'name': scenario.action_name,
+				'params': scenario.action_params,
+				'actiontype_id': scenario.actiontype_id,
+				'actiontype_name': scenario.actiontype_name
+			}) : null;
+
+				delete scenario.action_id;
+				delete scenario.action_name;
+				delete scenario.action_params;
+					delete scenario.actiontype_id;
+					delete scenario.actiontype_name;
+
+			scenario.condition = null;
+
+				delete scenario.condition_id;
+				delete scenario.condition_name;
 
 			return scenario;
 

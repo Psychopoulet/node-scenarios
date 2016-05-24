@@ -141,8 +141,6 @@ describe('triggers', function() {
 			return container.get('scenarios').search({ trigger: trigger });
 		}).then(function(scenarios) {
 
-			console.log(scenarios);
-
 			assert.strictEqual(true, scenarios instanceof Array, "Returned value is not an Array");
 			assert.strictEqual(0, scenarios.length, "There is no linked scenarios");
 			done();

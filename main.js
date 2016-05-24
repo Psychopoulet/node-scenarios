@@ -9,10 +9,11 @@
 			SimpleContainer = require('simplecontainer'),
 			sqlite3 = require('sqlite3'),
 
-			Scenarios = require(path.join(__dirname, 'database', 'scenarios.js')),
 			Triggers = require(path.join(__dirname, 'database', 'triggers.js')),
+			Scenarios = require(path.join(__dirname, 'database', 'scenarios.js')),
 			Actions = require(path.join(__dirname, 'database', 'actions.js')),
-			ActionsTypes = require(path.join(__dirname, 'database', 'actionstypes.js'));
+			ActionsTypes = require(path.join(__dirname, 'database', 'actionstypes.js'))/*,
+			Junctions = require(path.join(__dirname, 'database', 'junctions.js'))*/;
 
 // private
 
@@ -142,10 +143,11 @@ module.exports = class SimpleScenarios {
 				if (_db) {
 
 					resolve(
-						_container	.set('scenarios', new Scenarios(db))
-									.set('triggers', new Triggers(db))
+						_container	.set('triggers', new Triggers(db))
+									.set('scenarios', new Scenarios(db))
 									.set('actions', new Actions(db))
 									.set('actionstypes', new ActionsTypes(db))
+									//.set('junctions', new Junctions(db))
 					);
 
 				}
@@ -163,10 +165,11 @@ module.exports = class SimpleScenarios {
 							else {
 
 								resolve(
-									_container	.set('scenarios', new Scenarios(db))
-												.set('triggers', new Triggers(db))
+									_container	.set('triggers', new Triggers(db))
+												.set('scenarios', new Scenarios(db))
 												.set('actions', new Actions(db))
 												.set('actionstypes', new ActionsTypes(db))
+												//.set('junctions', new Junctions(db))
 								);
 
 							}
