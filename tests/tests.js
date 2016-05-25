@@ -57,3 +57,4 @@ require(path.join(__dirname, 'testsTriggers.js'));
 require(path.join(__dirname, 'testsScenarios.js'));
 require(path.join(__dirname, 'testsActionsTypes.js'));
 require(path.join(__dirname, 'testsActions.js'));
+require(path.join(__dirname, 'testsConditionsTypes.js'));
