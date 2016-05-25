@@ -41,7 +41,6 @@ module.exports = class DBActions extends require(require('path').join(__dirname,
 				action.params = null;
 			}
 			
-
 			return action;
 
 		}
@@ -278,14 +277,14 @@ module.exports = class DBActions extends require(require('path').join(__dirname,
 				if (!actiontype) {
 					reject("There is no action type.");
 				}
-					else if (!actiontype.id) {
+					else if (!actiontype.id || !actiontype.code) {
 						reject("The action type is incorrect.");
 					}
 				else if ('function' !== typeof executer) {
 					reject("The executer is not a function.");
 				}
 				else {
-					_tabExecuters[actiontype.id] = executer;
+					_tabExecuters[actiontype.code] = executer;
 					resolve();
 				}
 
@@ -304,18 +303,18 @@ module.exports = class DBActions extends require(require('path').join(__dirname,
 				else if (!action.type) {
 					reject('There is no action type.');
 				}
-					else if (!action.type.id) {
+					else if (!action.type.id || !actiontype.code) {
 						reject('The action type is not valid.');
 					}
 				else {
 
-					if (!_tabExecuters[action.type.id]) {
+					if (!_tabExecuters[action.type.code]) {
 						resolve();
 					}
 					else {
 
 						try {
-							_tabExecuters[action.type.id](action);
+							_tabExecuters[action.type.code](action);
 							resolve();
 						}
 						catch(e) {

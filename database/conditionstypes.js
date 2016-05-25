@@ -3,7 +3,7 @@
 
 // private
 
-	var _sSelectQuery = "SELECT id, code, name FROM actionstypes";
+	var _sSelectQuery = "SELECT id, code, name FROM conditionstypes";
 
 // module
 
@@ -11,8 +11,8 @@ module.exports = class DBActionsTypes extends require(require('path').join(__dir
 
 	// formate data
 
-		static formate(actiontype) {
-			return actiontype;
+		static formate(conditiontype) {
+			return conditiontype;
 		}
 
 	// read
@@ -22,7 +22,7 @@ module.exports = class DBActionsTypes extends require(require('path').join(__dir
 			let that = this;
 			return new Promise(function(resolve, reject) {
 
-				that.db.get(_sSelectQuery + " ORDER BY actionstypes.id DESC LIMIT 0,1;", [], function(err, row) {
+				that.db.get(_sSelectQuery + " ORDER BY conditionstypes.id DESC LIMIT 0,1;", [], function(err, row) {
 					
 					if (err) {
 						reject((err.message) ? err.message : err);
@@ -49,21 +49,21 @@ module.exports = class DBActionsTypes extends require(require('path').join(__dir
 					query += " WHERE 1 = 1";
 
 					if (data.id) {
-						query += " AND actionstypes.id = :id";
+						query += " AND conditionstypes.id = :id";
 						options[':id'] = data.id;
 					}
 					if (data.code) {
-						query += " AND actionstypes.code = :code";
+						query += " AND conditionstypes.code = :code";
 						options[':code'] = data.code;
 					}
 					if (data.name) {
-						query += " AND actionstypes.name = :name";
+						query += " AND conditionstypes.name = :name";
 						options[':name'] = data.name;
 					}
 					
 				}
 
-				that.db.all(query + " ORDER BY actionstypes.name ASC;", options, function(err, rows) {
+				that.db.all(query + " ORDER BY conditionstypes.name ASC;", options, function(err, rows) {
 
 					if (err) {
 						reject((err.message) ? err.message : err);
@@ -80,25 +80,25 @@ module.exports = class DBActionsTypes extends require(require('path').join(__dir
 
 	// write
 
-		add (actiontype) {
+		add (conditiontype) {
 
 			let that = this;
 			return new Promise(function(resolve, reject) {
 
-				if (!actiontype) {
+				if (!conditiontype) {
 					reject('There is no data.');
 				}
-				else if (!actiontype.code) {
+				else if (!conditiontype.code) {
 					reject('There is no code.');
 				}
-				else if (!actiontype.name) {
+				else if (!conditiontype.name) {
 					reject('There is no name.');
 				}
 				else {
 
-					that.db.run("INSERT INTO actionstypes (code, name) VALUES (:code, :name);", {
-						':code': actiontype.code,
-						':name': actiontype.name
+					that.db.run("INSERT INTO conditionstypes (code, name) VALUES (:code, :name);", {
+						':code': conditiontype.code,
+						':name': conditiontype.name
 					}, function(err) {
 
 						if (err) {
@@ -116,36 +116,36 @@ module.exports = class DBActionsTypes extends require(require('path').join(__dir
 
 		}
 
-		edit (actiontype) {
+		edit (conditiontype) {
 
 			let that = this;
 			return new Promise(function(resolve, reject) {
 
-				if (!actiontype) {
+				if (!conditiontype) {
 					reject('There is no data.');
 				}
-					else if (!actiontype.id) {
+					else if (!conditiontype.id) {
 						reject('The action type is incorrect.');
 					}
-				else if (!actiontype.code) {
+				else if (!conditiontype.code) {
 					reject('There is no code.');
 				}
-				else if (!actiontype.name) {
+				else if (!conditiontype.name) {
 					reject('There is no name.');
 				}
 				else {
 
-					that.db.run("UPDATE actionstypes SET code = :code, name = :name WHERE id = :id;", {
-						':id': actiontype.id,
-						':code': actiontype.code,
-						':name': actiontype.name
+					that.db.run("UPDATE conditionstypes SET code = :code, name = :name WHERE id = :id;", {
+						':id': conditiontype.id,
+						':code': conditiontype.code,
+						':name': conditiontype.name
 					}, function(err) {
 
 						if (err) {
 							reject((err.message) ? err.message : err);
 						}
 						else {
-							resolve(actiontype);
+							resolve(conditiontype);
 						}
 
 					});
@@ -156,20 +156,20 @@ module.exports = class DBActionsTypes extends require(require('path').join(__dir
 
 		}
 
-		delete (actiontype) {
+		delete (conditiontype) {
 			
 			let that = this;
 			return new Promise(function(resolve, reject) {
 
-				if (!actiontype) {
+				if (!conditiontype) {
 					reject('There is no data.');
 				}
-					else if (!actiontype.id) {
+					else if (!conditiontype.id) {
 						reject('The action type is incorrect.');
 					}
 				else {
 
-					that.db.run("DELETE FROM actionstypes WHERE id = :id;", { ':id' : actiontype.id }, function(err) {
+					that.db.run("DELETE FROM conditionstypes WHERE id = :id;", { ':id' : conditiontype.id }, function(err) {
 
 						if (err) {
 							reject((err.message) ? err.message : err);

@@ -13,21 +13,28 @@ describe('actionstypes', function() {
 
 	let container;
 
-	it('should init module', function(done) {
+	before(function() {
 
-		SimpleScenarios.init().then(function (_container) {
+		return SimpleScenarios.delete().then(function () {
+			return SimpleScenarios.init();
+		}).then(function (_container) {
 			container = _container;
-			done();
-		}).catch(done);
+		});
 
+	});
+
+	after(function() {
+		return SimpleScenarios.delete();
 	});
 
 	it('should create data', function(done) {
 
 		container.get('actionstypes').add({
+			'code': 'test',
 			'name': 'test'
 		}).then(function(actiontype) {
-			assert.strictEqual('test', actiontype.name, "ActionType added is not valid");
+			assert.strictEqual('test', actiontype.code, "ActionType added is not valid (code)");
+			assert.strictEqual('test', actiontype.name, "ActionType added is not valid (name)");
 			done();
 		}).catch(done);
 
@@ -36,7 +43,17 @@ describe('actionstypes', function() {
 	it('should return the last inserted data', function(done) {
 
 		container.get('actionstypes').lastInserted().then(function(actiontype) {
-			assert.strictEqual('test', actiontype.name, "ActionType added is not valid");
+			assert.strictEqual('test', actiontype.code, "ActionType added is not valid (code)");
+			assert.strictEqual('test', actiontype.name, "ActionType added is not valid (name)");
+			done();
+		}).catch(done);
+
+	});
+
+	it("should return all the data with the code 'test'", function(done) {
+
+		container.get('actionstypes').search({ 'code': 'test' }).then(function(actionstypes) {
+			assert.strictEqual(1, actionstypes.length, "ActionsTypes returned are not valid");
 			done();
 		}).catch(done);
 
@@ -63,10 +80,12 @@ describe('actionstypes', function() {
 	it("should edit last inserted data", function(done) {
 
 		container.get('actionstypes').lastInserted().then(function(actiontype) {
+			actiontype.code = 'test2';
 			actiontype.name = 'test2';
 			return container.get('actionstypes').edit(actiontype);
 		}).then(function(actiontype) {
-			assert.strictEqual('test2', actiontype.name, "ActionType returned is not valid");
+			assert.strictEqual('test2', actiontype.code, "ActionType added is not valid (code)");
+			assert.strictEqual('test2', actiontype.name, "ActionType added is not valid (name)");
 			done();
 		}).catch(done);
 

@@ -8,58 +8,32 @@
 			
 			SimpleScenarios = require('../main.js');
 
-// private
-
-	var _dbFile = path.join(__dirname, '..', 'database', 'database.sqlite3');
-
-	function _databaseExists(callback) {
-
-		fs.stat(_dbFile, function(err, stats) {
-			callback(!err && stats && stats.isFile());
-		});
-
-	}
-
-	function _deleteDatabase(callback) {
-
-		_databaseExists(function(exists) {
-
-			if (!exists) {
-				callback();
-			}
-			else {
-
-				SimpleScenarios.release().then(function() {
-					fs.unlink(_dbFile, callback);
-				}).catch(callback);
-
-			}
-			
-		});
-
-	}
-
 // tests
 
-describe('init', function() {
+describe('main', function() {
 
-	before(function(done) {
-		_deleteDatabase(done);
+	before(function() {
+		return SimpleScenarios.delete();
 	});
 
 	it('should create database', function(done) {
 
 		SimpleScenarios.init().then(function (container) {
 
-			_databaseExists(function(exists) {
+			fs.stat(path.join(__dirname, '..', 'database', 'database.sqlite3'), function(err, stats) {
 
-				assert.strictEqual(true, exists, "Database was not created.");
-				
-				assert.strictEqual(true, container.has('actions'), "Action is not instancied");
-				assert.strictEqual(true, container.get('actions') instanceof require(path.join(__dirname, '..', 'database', 'actions.js')), "Action is not a correct instance");
+				assert.strictEqual(true, (!err && stats && stats.isFile()), "Database was not created.");
 
-				assert.strictEqual(true, container.has('actionstypes'), "ActionType is not instancied");
-				assert.strictEqual(true, container.get('actionstypes') instanceof require(path.join(__dirname, '..', 'database', 'actionstypes.js')), "ActionType is not a correct instance");
+				assert.strictEqual(true, container.has('scenarios'), "Scenarios is not instancied");
+				assert.strictEqual(true, container.get('scenarios') instanceof require(path.join(__dirname, '..', 'database', 'scenarios.js')), "Scenarios is not a correct instance");
+
+				assert.strictEqual(true, container.has('triggers'), "Triggers is not instancied");
+				assert.strictEqual(true, container.get('triggers') instanceof require(path.join(__dirname, '..', 'database', 'triggers.js')), "Triggers is not a correct instance");
+
+				assert.strictEqual(true, container.has('actions'), "Actions is not instancied");
+				assert.strictEqual(true, container.get('actions') instanceof require(path.join(__dirname, '..', 'database', 'actions.js')), "Actions is not a correct instance");
+				assert.strictEqual(true, container.has('actionstypes'), "ActionsTypes is not instancied");
+				assert.strictEqual(true, container.get('actionstypes') instanceof require(path.join(__dirname, '..', 'database', 'actionstypes.js')), "ActionsTypes is not a correct instance");
 
 				done();
 				
@@ -67,17 +41,20 @@ describe('init', function() {
 
 		}).catch(done);
 
+	}).timeout(5000);
+
+	it('should release database', function() {
+		return SimpleScenarios.release();
+	});
+
+	it('should delete database', function() {
+		return SimpleScenarios.delete();
 	});
 
 });
 
+require(path.join(__dirname, 'testsTriggers.js'));
+require(path.join(__dirname, 'testsScenarios.js'));
 require(path.join(__dirname, 'testsActionsTypes.js'));
 require(path.join(__dirname, 'testsActions.js'));
-
-describe('delete', function() {
-
-	it('should delete database', function(done) {
-		_deleteDatabase(done);
-	});
-
-});
+require(path.join(__dirname, 'testsConditionsTypes.js'));
