@@ -12,8 +12,8 @@
 			Triggers = require(path.join(__dirname, 'database', 'triggers.js')),
 			Scenarios = require(path.join(__dirname, 'database', 'scenarios.js')),
 			Actions = require(path.join(__dirname, 'database', 'actions.js')),
-			ActionsTypes = require(path.join(__dirname, 'database', 'actionstypes.js'))/*,
-			Junctions = require(path.join(__dirname, 'database', 'junctions.js'))*/;
+			ActionsTypes = require(path.join(__dirname, 'database', 'actionstypes.js')),
+			ConditionsTypes = require(path.join(__dirname, 'database', 'conditionstypes.js'));
 
 // private
 
@@ -147,7 +147,7 @@ module.exports = class SimpleScenarios {
 									.set('scenarios', new Scenarios(db))
 									.set('actions', new Actions(db))
 									.set('actionstypes', new ActionsTypes(db))
-									//.set('junctions', new Junctions(db))
+									.set('conditionstypes', new ConditionsTypes(db))
 					);
 
 				}
@@ -169,7 +169,7 @@ module.exports = class SimpleScenarios {
 												.set('scenarios', new Scenarios(db))
 												.set('actions', new Actions(db))
 												.set('actionstypes', new ActionsTypes(db))
-												//.set('junctions', new Junctions(db))
+												.set('conditionstypes', new ConditionsTypes(db))
 								);
 
 							}
