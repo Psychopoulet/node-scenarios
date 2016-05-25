@@ -41,7 +41,6 @@ module.exports = class DBActions extends require(require('path').join(__dirname,
 				action.params = null;
 			}
 			
-
 			return action;
 
 		}
