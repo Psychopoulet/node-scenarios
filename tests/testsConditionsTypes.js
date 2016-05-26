@@ -2,9 +2,7 @@
 
 // deps
 
-	const 	path = require('path'),
-			assert = require('assert'),
-			
+	const 	assert = require('assert'),
 			SimpleScenarios = require('../main.js');
 
 // tests
