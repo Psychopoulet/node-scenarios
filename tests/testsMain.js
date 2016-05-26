@@ -35,6 +35,11 @@ describe('main', function() {
 				assert.strictEqual(true, container.has('actionstypes'), "ActionsTypes is not instancied");
 				assert.strictEqual(true, container.get('actionstypes') instanceof require(path.join(__dirname, '..', 'database', 'actionstypes.js')), "ActionsTypes is not a correct instance");
 
+				assert.strictEqual(true, container.has('conditions'), "Conditions is not instancied");
+				assert.strictEqual(true, container.get('conditions') instanceof require(path.join(__dirname, '..', 'database', 'conditions.js')), "Conditions is not a correct instance");
+				assert.strictEqual(true, container.has('conditionstypes'), "ConditionsTypes is not instancied");
+				assert.strictEqual(true, container.get('conditionstypes') instanceof require(path.join(__dirname, '..', 'database', 'conditionstypes.js')), "ConditionsTypes is not a correct instance");
+
 				done();
 				
 			});
@@ -52,9 +57,3 @@ describe('main', function() {
 	});
 
 });
-
-require(path.join(__dirname, 'testsTriggers.js'));
-require(path.join(__dirname, 'testsScenarios.js'));
-require(path.join(__dirname, 'testsActionsTypes.js'));
-require(path.join(__dirname, 'testsActions.js'));
-require(path.join(__dirname, 'testsConditionsTypes.js'));

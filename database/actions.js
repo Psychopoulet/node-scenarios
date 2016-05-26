@@ -11,6 +11,7 @@
 		" actions.params," +
 
 		" actionstypes.id AS actiontype_id," +
+		" actionstypes.code AS actiontype_code," +
 		" actionstypes.name AS actiontype_name" +
 
 	" FROM actions" +
@@ -28,14 +29,16 @@ module.exports = class DBActions extends require(require('path').join(__dirname,
 
 			action.type = {
 				id : action.actiontype_id,
+				code : action.actiontype_code,
 				name : action.actiontype_name
 			};
 
 				delete action.actiontype_id;
+				delete action.actiontype_code;
 				delete action.actiontype_name;
 
 			try {
-				action.params = ('string' === typeof action.params && '' != action.params) ? JSON.parse(action.params) : null;
+				action.params = ('string' === typeof action.params && '' !== action.params) ? JSON.parse(action.params) : null;
 			}
 			catch(e) {
 				action.params = null;
@@ -92,6 +95,10 @@ module.exports = class DBActions extends require(require('path').join(__dirname,
 						if (data.type.id) {
 							query += " AND actionstypes.id = :actiontype_id";
 							options[':actiontype_id'] = data.type.id;
+						}
+						if (data.type.code) {
+							query += " AND actionstypes.code = :actiontype_code";
+							options[':actiontype_code'] = data.type.code;
 						}
 						if (data.type.name) {
 							query += " AND actionstypes.name = :actiontype_name";
@@ -303,7 +310,7 @@ module.exports = class DBActions extends require(require('path').join(__dirname,
 				else if (!action.type) {
 					reject('There is no action type.');
 				}
-					else if (!action.type.id || !actiontype.code) {
+					else if (!action.type.id || !action.type.code) {
 						reject('The action type is not valid.');
 					}
 				else {

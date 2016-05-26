@@ -3,9 +3,7 @@
 
 // deps
 
-	const 	path = require('path'),
-			Actions = require(path.join(__dirname, 'actions.js'))/*,
-			Conditions = require(path.join(__dirname, 'conditions.js'))*/;
+	const path = require('path');
 
 // private
 
@@ -48,11 +46,11 @@ module.exports = class DBScenarios extends require(path.join(__dirname, '_abstra
 			}
 			else if (scenario.condition_id) {
 
-				scenario.start = Conditions.formate({
+				scenario.start = {
 					'id': scenario.condition_id,
 					'name': scenario.condition_name,
 					'junction': 'condition'
-				});
+				};
 
 			}
 			else {

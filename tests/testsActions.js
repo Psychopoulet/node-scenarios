@@ -43,6 +43,7 @@ describe('actions', function() {
 		}).then(function(action) {
 
 			assert.strictEqual('test', action.name, "Action added is not valid (name)");
+			assert.strictEqual('test', action.type.code, "Action added is not valid (type code)");
 			assert.deepStrictEqual({"test": "test"}, action.params, "Action added is not valid (params)");
 
 			done();
