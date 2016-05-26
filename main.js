@@ -13,7 +13,8 @@
 			Scenarios = require(path.join(__dirname, 'database', 'scenarios.js')),
 			Actions = require(path.join(__dirname, 'database', 'actions.js')),
 			ActionsTypes = require(path.join(__dirname, 'database', 'actionstypes.js')),
-			ConditionsTypes = require(path.join(__dirname, 'database', 'conditionstypes.js'));
+			ConditionsTypes = require(path.join(__dirname, 'database', 'conditionstypes.js')),
+			Conditions = require(path.join(__dirname, 'database', 'conditions.js'));
 
 // private
 
@@ -60,7 +61,7 @@
 
 												query  = query.trim();
 
-												if ('' != query && 0 > query.indexOf('--')) {
+												if ('' !== query && 0 > query.indexOf('--')) {
 													sql += query;
 												}
 
@@ -72,7 +73,7 @@
 
 										sql.split(';').forEach(function(query) {
 
-											if ('' != query) {
+											if ('' !== query) {
 												queries.push(query + ';');
 											}
 
@@ -143,11 +144,12 @@ module.exports = class SimpleScenarios {
 				if (_db) {
 
 					resolve(
-						_container	.set('triggers', new Triggers(db))
-									.set('scenarios', new Scenarios(db))
-									.set('actions', new Actions(db))
-									.set('actionstypes', new ActionsTypes(db))
-									.set('conditionstypes', new ConditionsTypes(db))
+						_container	.set('triggers', new Triggers(_db))
+									.set('scenarios', new Scenarios(_db))
+									.set('actions', new Actions(_db))
+									.set('actionstypes', new ActionsTypes(_db))
+									.set('conditionstypes', new ConditionsTypes(_db))
+									.set('conditions', new Conditions(_db))
 					);
 
 				}
@@ -170,6 +172,7 @@ module.exports = class SimpleScenarios {
 												.set('actions', new Actions(db))
 												.set('actionstypes', new ActionsTypes(db))
 												.set('conditionstypes', new ConditionsTypes(db))
+												.set('conditions', new Conditions(db))
 								);
 
 							}
