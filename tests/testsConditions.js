@@ -96,62 +96,6 @@ describe('conditions', function() {
 
 	});
 
-	it("should link to trigger", function(done) {
-
-		container.get('triggers').add({ name: 'test', code: 'test' }).then(function(trigger) {
-
-			container.get('conditions').lastInserted().then(function(condition) {
-				return container.get('conditions').linkToTrigger(condition, trigger);
-			}).then(function() {
-				done();
-			}).catch(done);
-
-		}).catch(done);
-		
-	});
-
-	it("should get linked triggers", function(done) {
-
-		container.get('conditions').lastInserted().then(function(condition) {
-			return container.get('triggers').search({ condition: condition });
-		}).then(function(triggers) {
-
-			assert.strictEqual(true, triggers instanceof Array, "Returned value is not an Array");
-			assert.strictEqual(1, triggers.length, "There is no linked triggers");
-			done();
-
-		}).catch(done);
-
-	});
-
-	it("should unlink to trigger", function(done) {
-
-		container.get('triggers').lastInserted().then(function(trigger) {
-
-			container.get('conditions').lastInserted().then(function(condition) {
-				return container.get('conditions').unlinkToTrigger(condition, trigger);
-			}).then(function() {
-				done();
-			}).catch(done);
-
-		}).catch(done);
-		
-	});
-
-	it("should get linked triggers", function(done) {
-
-		container.get('conditions').lastInserted().then(function(condition) {
-			return container.get('triggers').search({ condition: condition });
-		}).then(function(triggers) {
-
-			assert.strictEqual(true, triggers instanceof Array, "Returned value is not an Array");
-			assert.strictEqual(0, triggers.length, "There is no linked triggers");
-			done();
-
-		}).catch(done);
-
-	});
-
 	it("should delete last inserted data", function(done) {
 
 		container.get('conditions').lastInserted().then(function(condition) {

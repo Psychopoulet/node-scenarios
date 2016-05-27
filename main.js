@@ -144,12 +144,13 @@ module.exports = class SimpleScenarios {
 				if (_db) {
 
 					resolve(
-						_container	.set('triggers', new Triggers(_db))
-									.set('scenarios', new Scenarios(_db))
-									.set('actions', new Actions(_db))
-									.set('actionstypes', new ActionsTypes(_db))
-									.set('conditionstypes', new ConditionsTypes(_db))
-									.set('conditions', new Conditions(_db))
+						_container	.set('db', _db)
+									.set('triggers', new Triggers(_container))
+									.set('scenarios', new Scenarios(_container))
+									.set('actions', new Actions(_container))
+									.set('actionstypes', new ActionsTypes(_container))
+									.set('conditionstypes', new ConditionsTypes(_container))
+									.set('conditions', new Conditions(_container))
 					);
 
 				}
@@ -167,12 +168,13 @@ module.exports = class SimpleScenarios {
 							else {
 
 								resolve(
-									_container	.set('triggers', new Triggers(db))
-												.set('scenarios', new Scenarios(db))
-												.set('actions', new Actions(db))
-												.set('actionstypes', new ActionsTypes(db))
-												.set('conditionstypes', new ConditionsTypes(db))
-												.set('conditions', new Conditions(db))
+									_container	.set('db', _db)
+												.set('triggers', new Triggers(_container))
+												.set('scenarios', new Scenarios(_container))
+												.set('actions', new Actions(_container))
+												.set('actionstypes', new ActionsTypes(_container))
+												.set('conditionstypes', new ConditionsTypes(_container))
+												.set('conditions', new Conditions(_container))
 								);
 
 							}

@@ -23,11 +23,17 @@
 	" FROM scenarios" +
 		" LEFT JOIN junctions ON junctions.id = scenarios.id_start" +
 			" LEFT JOIN actions ON actions.id = junctions.id_action" +
-			" LEFT JOIN conditions ON conditions.id = junctions.id_condition";
+			" LEFT JOIN conditions ON conditions.id = junctions.id_condition",
+	_container;
 
 // module
 
 module.exports = class DBScenarios extends require(path.join(__dirname, '_abstract.js')) {
+
+	constructor (container) {
+		super(container);
+		_container = container;
+	}
 
 	// formate data
 
@@ -89,38 +95,38 @@ module.exports = class DBScenarios extends require(path.join(__dirname, '_abstra
 
 		}
 
-		search(data) {
+		search(scenario) {
 
 			let that = this;
 			return new Promise(function(resolve, reject) {
 
 				let options = {}, query = _sSelectQuery;
 
-				if (data) {
+				if (scenario) {
 
-					if (data.trigger && data.trigger.id) {
+					if (scenario.trigger && scenario.trigger.id) {
 
 						query += " INNER JOIN scenariostriggers ON scenariostriggers.id_trigger = :id_trigger";
-						options[':id_trigger'] = data.trigger.id;
+						options[':id_trigger'] = scenario.trigger.id;
 
 					}
 
 					query += " WHERE 1 = 1";
 
-					if (data.id) {
+					if (scenario.id) {
 						query += " AND scenarios.id = :id";
-						options[':id'] = data.id;
+						options[':id'] = scenario.id;
 					}
-					if (data.name) {
+					if (scenario.name) {
 						query += " AND scenarios.name = :name";
-						options[':name'] = data.name;
+						options[':name'] = scenario.name;
 					}
-					if (data.active) {
+					if ('undefined' !== typeof scenario.active) {
 						query += " AND scenarios.active = :active";
-						options[':active'] = data.active;
+						options[':active'] = (scenario.active) ? '1' : '0';
 					}
 
-					if (data.trigger && !data.trigger.id) {
+					if (scenario.trigger && !scenario.trigger.id) {
 						query += " AND 1 = 0";
 					}
 					
@@ -164,7 +170,7 @@ module.exports = class DBScenarios extends require(path.join(__dirname, '_abstra
 
 					that.db.run("INSERT INTO scenarios (name, active) VALUES (:name, :active);", {
 						':name': scenario.name,
-						':active': (scenario.active && true === scenario.active || 1 == scenario.active) ? '1' : '0'
+						':active': ('undefined' !== typeof scenario.active && (true === scenario.active || 1 == scenario.active)) ? '1' : '0'
 					}, function(err) {
 
 						if (err) {
@@ -198,16 +204,20 @@ module.exports = class DBScenarios extends require(path.join(__dirname, '_abstra
 				}
 				else {
 
-					that.db.run("UPDATE scenarios SET name = :name, active = :active WHERE id = :id;", {
+					scenario.junction = (scenario.junction) ? scenario.junction : null;
+
+					that.db.run("UPDATE scenarios SET name = :name, active = :active, id_start = :start WHERE id = :id;", {
 						':id': scenario.id,
 						':name': scenario.name,
-						':active': (scenario.active && true === scenario.active || 1 == scenario.active) ? '1' : '0'
+						':active': ('undefined' !== typeof scenario.active && (true === scenario.active || 1 == scenario.active)) ? '1' : '0',
+						':start': scenario.junction
 					}, function(err) {
 
 						if (err) {
 							reject((err.message) ? err.message : err);
 						}
 						else {
+							delete scenario.junction;
 							resolve(scenario);
 						}
 
@@ -249,79 +259,225 @@ module.exports = class DBScenarios extends require(path.join(__dirname, '_abstra
 
 		}
 
-		linkToTrigger (scenario, trigger) {
+		// triggers
+
+			linkToTrigger (scenario, trigger) {
+				return _container.get('triggers').linkToScenario(scenario, trigger);
+			}
+
+			unlinkToTrigger (scenario, trigger) {
+				return _container.get('triggers').unlinkToScenario(scenario, trigger);
+			}
+
+		// start
+
+			linkStartAction (scenario, action) {
+
+				let that = this;
+				return new Promise(function(resolve, reject) {
+
+					if (!scenario) {
+						reject('There is no data.');
+					}
+						else if (!scenario.id) {
+							reject('The scenario is incorrect.');
+						}
+					else if (!action) {
+						reject('There is no action.');
+					}
+						else if (!action.id) {
+							reject('The action is incorrect.');
+						}
+					else {
+
+						that.unlinkStart(scenario).then(function(scenario) {
+
+							that.db.run("INSERT INTO junctions (id_action) VALUES (:id_action);", { ':id_action' : action.id }, function(err) {
+
+								if (err) {
+									reject((err.message) ? err.message : err);
+								}
+								else {
+
+									that.db.get("SELECT id FROM junctions ORDER BY junctions.id DESC LIMIT 0,1;", [], function(err, row) {
+										
+										if (err) {
+											reject((err.message) ? err.message : err);
+										}
+										else if (!row) {
+											reject("Impossible to create this start point.");
+										}
+										else {
+
+											scenario.junction = row.id;
+
+											that.edit(scenario).then(function() {
+												return that.searchOne({ id: scenario.id });
+											}).then(function(scenario) {
+												resolve(scenario);
+											}).catch(reject);
+
+										}
+
+									});
+
+								}
+
+							});
+
+						}).catch(reject);
+
+					}
+
+				});
+
+			}
+
+			linkStartCondition (scenario, condition) {
+				
+				let that = this;
+				return new Promise(function(resolve, reject) {
+
+					if (!scenario) {
+						reject('There is no data.');
+					}
+						else if (!scenario.id) {
+							reject('The scenario is incorrect.');
+						}
+					else if (!condition) {
+						reject('There is no condition.');
+					}
+						else if (!condition.id) {
+							reject('The condition is incorrect.');
+						}
+					else {
+
+						that.unlinkStart(scenario).then(function() {
+
+							that.db.run("INSERT INTO junctions (id_condition) VALUES (:id_condition);", { ':id_condition' : condition.id }, function(err) {
+
+								if (err) {
+									reject((err.message) ? err.message : err);
+								}
+								else {
+
+									that.db.get("SELECT id FROM junctions ORDER BY junctions.id DESC LIMIT 0,1;", [], function(err, row) {
+										
+										if (err) {
+											reject((err.message) ? err.message : err);
+										}
+										else if (!row) {
+											reject("Impossible to create this start point.");
+										}
+										else {
+
+											scenario.junction = row.id;
+
+											that.edit(scenario).then(function() {
+												return that.searchOne({ id: scenario.id });
+											}).then(function(scenario) {
+												resolve(scenario);
+											}).catch(reject);
+
+										}
+
+									});
+
+								}
+
+							});
+
+						});
+
+					}
+
+				});
+
+			}
+
+			unlinkStart (scenario) {
+				
+				let that = this;
+				return new Promise(function(resolve, reject) {
+
+					if (!scenario) {
+						reject('There is no data.');
+					}
+						else if (!scenario.id) {
+							reject('The scenario is incorrect.');
+						}
+					else {
+
+						that.searchOne({ id: scenario.id }).then(function(scenario) {
+
+							if (!scenario.start) {
+								resolve(scenario);
+							}
+							else {
+
+								that.db.run("DELETE FROM junctions WHERE id = :id;", { ':id' : scenario.start.id }, function(err) {
+
+									if (err) {
+										reject((err.message) ? err.message : err);
+									}
+									else {
+
+										scenario.junction = null;
+
+										that.edit(scenario).then(function() {
+											return that.searchOne({ id: scenario.id });
+										}).then(function(scenario) {
+											resolve(scenario);
+										}).catch(reject);
+
+									}
+
+								});
+
+							}
+
+						}).catch(reject);
+
+					}
+
+				});
+				
+			}
+
+	// run
+
+		getWay(scenario) {
 
 			let that = this;
 			return new Promise(function(resolve, reject) {
 
-				if (!scenario) {
-					reject('There is no scenario data.');
-				}
-					else if (!scenario.id) {
-						reject('There is no valid scenario data.');
+				let way = null;
+				return that.searchOne({ id: scenario.id }).then(function(scenario) {
+
+					if (!scenario) {
+						reject('Impossible to find this scenario.');
 					}
-				else if (!trigger) {
-					reject('There is no trigger data.');
-				}
-					else if (!trigger.id) {
-						reject('There is no valid trigger data.');
+					else {
+
+
+						way = scenario;
+
+						resolve(way);
+
 					}
-				else {
 
-					that.db.run("INSERT INTO scenariostriggers (id_scenario, id_trigger) VALUES (:id_scenario, :id_trigger);", {
-						':id_scenario': scenario.id,
-						':id_trigger': trigger.id
-					}, function(err) {
-
-						if (err) {
-							reject((err.message) ? err.message : err);
-						}
-						else {
-							resolve();
-						}
-
-					});
-
-				}
+				});
 
 			});
 
 		}
 
-		unlinkToTrigger (scenario, trigger) {
+		run(scenario) {
 
 			let that = this;
-			return new Promise(function(resolve, reject) {
+			return this.getWay(way).then(function() {
 
-				if (!scenario) {
-					reject('There is no scenario data.');
-				}
-					else if (!scenario.id) {
-						reject('There is no valid scenario data.');
-					}
-				else if (!trigger) {
-					reject('There is no trigger data.');
-				}
-					else if (!trigger.id) {
-						reject('There is no valid trigger data.');
-					}
-				else {
-
-					that.db.run("DELETE FROM scenariostriggers WHERE id_scenario = :id_scenario AND id_trigger = :id_trigger;", {
-						':id_scenario': scenario.id,
-						':id_trigger': trigger.id
-					}, function(err) {
-
-						if (err) {
-							reject((err.message) ? err.message : err);
-						}
-						else {
-							resolve();
-						}
-
-					});
-
-				}
+				console.log('test');
 
 			});
 

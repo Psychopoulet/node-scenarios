@@ -41,8 +41,84 @@ describe('scenarios', function() {
 
 	});
 
-	it.skip('should create data with action', function() { });
-	it.skip('should create data with condition', function() { });
+	it('should create data with action', function(done) {
+
+		let action;
+
+		container.get('actionstypes').add({
+			code: 'test',
+			name: 'test'
+		}).then(function(actiontype) {
+
+			return container.get('actions').add({
+				code: 'test',
+				name: 'test',
+				type: actiontype
+			});
+
+		}).then(function(_action) {
+			action = _action;
+			return container.get('scenarios').lastInserted();
+		}).then(function(scenario) {
+			return container.get('scenarios').linkStartAction(scenario, action);
+		}).then(function(scenario) {
+
+			assert.strictEqual("test", scenario.name, "Scenario added is not valid (name)");
+			assert.strictEqual(true, scenario.active, "Scenario added is not valid (active)");
+			assert.strictEqual("test", scenario.start.name, "Scenario added is not valid (start name)");
+
+			done();
+
+		}).catch(done);
+
+
+	});
+
+	it('should create data with condition', function(done) {
+
+		let condition;
+
+		container.get('conditionstypes').add({
+			code: 'test',
+			name: 'test'
+		}).then(function(conditiontype) {
+
+			return container.get('conditions').add({
+				code: 'test',
+				name: 'test',
+				value: 'test',
+				type: conditiontype
+			});
+
+		}).then(function(_condition) {
+			condition = _condition;
+			return container.get('scenarios').lastInserted();
+		}).then(function(scenario) {
+			return container.get('scenarios').linkStartCondition(scenario, condition);
+		}).then(function(scenario) {
+
+			assert.strictEqual("test", scenario.name, "Scenario added is not valid (name)");
+			assert.strictEqual(true, scenario.active, "Scenario added is not valid (active)");
+			assert.strictEqual("test", scenario.start.name, "Scenario added is not valid (start name)");
+
+			done();
+
+		}).catch(done);
+
+	});
+
+	it('should unlink start', function(done) {
+
+		return container.get('scenarios').lastInserted().then(function(scenario) {
+			return container.get('scenarios').unlinkStart(scenario);
+		}).then(function(scenario) {
+
+			assert.strictEqual(null, scenario.start, "Scenario added is not valid (start)");
+			done();
+
+		}).catch(done);
+
+	});
 
 	it('should return the last inserted data', function(done) {
 

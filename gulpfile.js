@@ -80,8 +80,13 @@
 		return gulp .src(path.join(__dirname, 'tests', 'testsConditions.js'), { read: false })
 					.pipe(mocha());
 
+	}).task("mocha-execute", function() {
+
+		return gulp .src(path.join(__dirname, 'tests', 'testsExecute.js'), { read: false })
+					.pipe(mocha());
+
 	}).task("mocha", gulpsync.sync([
-		"mocha-main", "mocha-triggers", "mocha-scenarios", "mocha-actionstypes", "mocha-actions", "mocha-conditionstypes", "mocha-conditions"
+		"mocha-main", "mocha-triggers", "mocha-scenarios", "mocha-actionstypes", "mocha-actions", "mocha-conditionstypes", "mocha-conditions", "mocha-execute"
 	]));
 
 	// default

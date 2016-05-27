@@ -5,8 +5,8 @@
 
 module.exports = class DBAbstract {
 
-	constructor (db) {
-		this.db = db;
+	constructor (container) {
+		this.db = container.get('db');
 	}
 
 	// formate data
