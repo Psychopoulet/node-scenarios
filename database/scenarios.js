@@ -451,7 +451,6 @@ module.exports = class DBScenarios extends require(path.join(__dirname, '_abstra
 			let that = this;
 			return new Promise(function(resolve, reject) {
 
-				let way = null;
 				return that.searchOne({ id: scenario.id }).then(function(scenario) {
 
 					if (!scenario) {
@@ -459,10 +458,42 @@ module.exports = class DBScenarios extends require(path.join(__dirname, '_abstra
 					}
 					else {
 
+						if (!scenario.start) {
+							resolve(scenario);
+						}
+						else  {
 
-						way = scenario;
+							let junction = scenario.start.junction;
 
-						resolve(way);
+							if ('action' === junction) {
+
+								_container.get('actions').searchOne({ id: scenario.start.id }).then(function(action) {
+
+									condition.junction = junction;
+									scenario.start = action;
+
+									resolve(scenario);
+
+								});
+
+							}
+							else if ('condition' === junction) {
+
+								_container.get('conditions').searchOne({ id: scenario.start.id }).then(function(condition) {
+
+									condition.junction = junction;
+									scenario.start = condition;
+
+									resolve(scenario);
+
+								});
+
+							}
+							else {
+								reject("Unknown scenario start junction '" + junction + "'");
+							}
+
+						}
 
 					}
 
