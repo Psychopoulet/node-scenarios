@@ -19,7 +19,7 @@ $ npm install simplescenarios
 ## Tests
 
 ```bash
-$ gulp mocha
+$ gulp
 ```
 
 ## License

@@ -3,92 +3,101 @@
 
 // deps
 
-	const	path = require("path"),
-			gulp = require("gulp"),
-			gulpsync = require('gulp-sync')(gulp),
-			jshint = require('gulp-jshint'),
-			mocha = require('gulp-mocha');
+	const path = require("path"),
+
+		del = require("del"),
+		isparta = require("isparta"),
+		gulp = require("gulp"),
+		babel = require("gulp-babel"),
+		eslint = require("gulp-eslint"),
+		excludeGitignore = require("gulp-exclude-gitignore"),
+		istanbul = require("gulp-istanbul"),
+		mocha = require("gulp-mocha"),
+		nsp = require("gulp-nsp"),
+		plumber = require("gulp-plumber");
+
+	require("babel-core/register");
 
 // private
 
-	var _jshintOptions = {
-		"strict": "global",
-		"esversion": 6,
-		"globals": {'require': false, 'module': false, '__dirname': false, 'describe': false, 'before': false, 'after': false, 'it': false}
-	};
+	var _libFiles = path.join(__dirname, "lib", "**", "*.js"),
+		_testsFiles = path.join(__dirname, "test", "**", "*.js");
 
-// run
+// tasks
 
-	// jshint
+	// tests
 
-	gulp.task("lint-root", function() {
+		// eslint
 
-		return gulp .src(path.join(__dirname, '*.js'))
-					.pipe(jshint(_jshintOptions))
-					.pipe(jshint.reporter('default', { verbose: true }));
+		gulp.task("eslint", function () {
 
-	}).task("lint-database", function() {
+			return gulp.src(path.join(__dirname, "**", "*.js"))
+				.pipe(excludeGitignore())
+				.pipe(eslint({
+					"rules": {
+						"indent": 0
+					},
+					"env": {
+						"node": true, "es6": true, "mocha": true
+					},
+					"extends": "eslint:recommended"
+				}))
+				.pipe(eslint.format())
+				.pipe(eslint.failAfterError());
 
-		return gulp .src(path.join(__dirname, 'database', '*.js'))
-					.pipe(jshint(_jshintOptions))
-					.pipe(jshint.reporter('default', { verbose: true }));
+		});
 
-	}).task("lint-tests", function() {
+	gulp.task("pre-test", function () {
 
-		return gulp .src(path.join(__dirname, 'tests', '*.js'))
-					.pipe(jshint(_jshintOptions))
-					.pipe(jshint.reporter('default', { verbose: true }));
+		return gulp.src(_libFiles)
+			.pipe(excludeGitignore())
+			.pipe(istanbul({
+				includeUntested: true,
+				instrumenter: isparta.Instrumenter
+			}))
+			.pipe(istanbul.hookRequire());
 
-	}).task("lint", gulpsync.sync([
-		"lint-root", "lint-database", "lint-tests"
-	]));
+	});
 
-	// mocha
+	gulp.task("test", ["pre-test"], function (cb) {
 
-	gulp.task("mocha-main", function() {
+		let mochaErr;
 
-		return gulp .src(path.join(__dirname, 'tests', 'testsMain.js'), { read: false })
-					.pipe(mocha());
+		gulp.src(_testsFiles)
+			.pipe(plumber())
+			.pipe(mocha({reporter: "spec"}))
+			.on("error", function (err) { mochaErr = err; })
+			.pipe(istanbul.writeReports())
+			.on("end", function () { cb(mochaErr); });
 
-	}).task("mocha-triggers", function() {
+	});
 
-		return gulp .src(path.join(__dirname, 'tests', 'testsTriggers.js'), { read: false })
-					.pipe(mocha());
+	// compile
 
-	}).task("mocha-scenarios", function() {
+		gulp.task("nsp", function (cb) {
+			nsp({ package: path.resolve("package.json") }, cb);
+		});
 
-		return gulp .src(path.join(__dirname, 'tests', 'testsScenarios.js'), { read: false })
-					.pipe(mocha());
+		gulp.task("clean", function () {
+			return del("dist");
+		});
 
-	}).task("mocha-actionstypes", function() {
+		gulp.task("babel", ["clean"], function () {
 
-		return gulp .src(path.join(__dirname, 'tests', 'testsActionsTypes.js'), { read: false })
-					.pipe(mocha());
+			return gulp.src(_libFiles)
+				.pipe(babel({ sourceMap: false }))
+				.pipe(gulp.dest("dist"));
 
-	}).task("mocha-actions", function() {
+		});
 
-		return gulp .src(path.join(__dirname, 'tests', 'testsActions.js'), { read: false })
-					.pipe(mocha());
+		gulp.task("prepublish", ["nsp", "babel"]);
 
-	}).task("mocha-conditionstypes", function() {
+// watcher
 
-		return gulp .src(path.join(__dirname, 'tests', 'testsConditionsTypes.js'), { read: false })
-					.pipe(mocha());
+	gulp.task("watch", function () {
+		gulp.watch([_libFiles, _testsFiles], ["test"]);
+	});
 
-	}).task("mocha-conditions", function() {
+// default
 
-		return gulp .src(path.join(__dirname, 'tests', 'testsConditions.js'), { read: false })
-					.pipe(mocha());
-
-	}).task("mocha-execute", function() {
-
-		return gulp .src(path.join(__dirname, 'tests', 'testsExecute.js'), { read: false })
-					.pipe(mocha());
-
-	}).task("mocha", gulpsync.sync([
-		"mocha-main", "mocha-triggers", "mocha-scenarios", "mocha-actionstypes", "mocha-actions", "mocha-conditionstypes", "mocha-conditions", "mocha-execute"
-	]));
-
-	// default
-
-	gulp.task("default", gulpsync.sync(["lint", "mocha"]));
+	gulp.task("default", ["eslint", "test"]);
