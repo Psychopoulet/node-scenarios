@@ -6,7 +6,7 @@
 			assert = require("assert"),
 			fs = require("fs"),
 			
-			SimpleScenarios = require(require('path').join(__dirname, "..", "dist", "main.js"));
+			SimpleScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
 
 // tests
 

@@ -3,7 +3,7 @@
 // deps
 
 	const 	assert = require("assert"),
-			SimpleScenarios = require(require('path').join(__dirname, "..", "dist", "main.js"));
+			SimpleScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
 
 // tests
 
@@ -47,6 +47,36 @@ describe("actions", function() {
 			done();
 
 		}).catch(done);
+
+	});
+
+	it("should create data with action", function(done) {
+
+		let action;
+
+		container.get("actionstypes").lastInserted().then(function(actiontype) {
+
+			return container.get("actions").add({
+				code: "test",
+				name: "test",
+				type: actiontype
+			});
+
+		}).then(function(_action) {
+			action = _action;
+			return container.get("scenarios").lastInserted();
+		}).then(function(scenario) {
+			return container.get("scenarios").linkStartAction(scenario, action);
+		}).then(function(scenario) {
+
+			assert.strictEqual("test", scenario.name, "Scenario added is not valid (name)");
+			assert.strictEqual(true, scenario.active, "Scenario added is not valid (active)");
+			assert.strictEqual("test", scenario.start.name, "Scenario added is not valid (start name)");
+
+			done();
+
+		}).catch(done);
+
 
 	});
 

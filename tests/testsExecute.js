@@ -2,7 +2,7 @@
 
 // deps
 
-	const 	SimpleScenarios = require(require('path').join(__dirname, "..", "lib", "main.js"));
+	const SimpleScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
 
 // tests
 

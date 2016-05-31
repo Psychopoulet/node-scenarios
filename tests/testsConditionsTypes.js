@@ -3,7 +3,7 @@
 // deps
 
 	const 	assert = require("assert"),
-			SimpleScenarios = require(require('path').join(__dirname, "..", "dist", "main.js"));
+			SimpleScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
 
 // tests
 
