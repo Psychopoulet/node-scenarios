@@ -20,25 +20,25 @@ describe("main", function() {
 
 		SimpleScenarios.init().then(function (container) {
 
-			fs.stat(path.join(__dirname, "..", "database", "database.sqlite3"), function(err, stats) {
+			fs.stat(path.join(__dirname, "..", "lib", "database.sqlite3"), function(err, stats) {
 
 				assert.strictEqual(true, (!err && stats && stats.isFile()), "Database was not created.");
 
 				assert.strictEqual(true, container.has("scenarios"), "Scenarios is not instancied");
-				assert.strictEqual(true, container.get("scenarios") instanceof require(path.join(__dirname, "..", "database", "scenarios.js")), "Scenarios is not a correct instance");
+				assert.strictEqual(true, container.get("scenarios") instanceof require(path.join(__dirname, "..", "lib", "models", "scenarios.js")), "Scenarios is not a correct instance");
 
 				assert.strictEqual(true, container.has("triggers"), "Triggers is not instancied");
-				assert.strictEqual(true, container.get("triggers") instanceof require(path.join(__dirname, "..", "database", "triggers.js")), "Triggers is not a correct instance");
+				assert.strictEqual(true, container.get("triggers") instanceof require(path.join(__dirname, "..", "lib", "models", "triggers.js")), "Triggers is not a correct instance");
 
 				assert.strictEqual(true, container.has("actions"), "Actions is not instancied");
-				assert.strictEqual(true, container.get("actions") instanceof require(path.join(__dirname, "..", "database", "actions.js")), "Actions is not a correct instance");
+				assert.strictEqual(true, container.get("actions") instanceof require(path.join(__dirname, "..", "lib", "models", "actions.js")), "Actions is not a correct instance");
 				assert.strictEqual(true, container.has("actionstypes"), "ActionsTypes is not instancied");
-				assert.strictEqual(true, container.get("actionstypes") instanceof require(path.join(__dirname, "..", "database", "actionstypes.js")), "ActionsTypes is not a correct instance");
+				assert.strictEqual(true, container.get("actionstypes") instanceof require(path.join(__dirname, "..", "lib", "models", "actionstypes.js")), "ActionsTypes is not a correct instance");
 
 				assert.strictEqual(true, container.has("conditions"), "Conditions is not instancied");
-				assert.strictEqual(true, container.get("conditions") instanceof require(path.join(__dirname, "..", "database", "conditions.js")), "Conditions is not a correct instance");
+				assert.strictEqual(true, container.get("conditions") instanceof require(path.join(__dirname, "..", "lib", "models", "conditions.js")), "Conditions is not a correct instance");
 				assert.strictEqual(true, container.has("conditionstypes"), "ConditionsTypes is not instancied");
-				assert.strictEqual(true, container.get("conditionstypes") instanceof require(path.join(__dirname, "..", "database", "conditionstypes.js")), "ConditionsTypes is not a correct instance");
+				assert.strictEqual(true, container.get("conditionstypes") instanceof require(path.join(__dirname, "..", "lib", "models", "conditionstypes.js")), "ConditionsTypes is not a correct instance");
 
 				done();
 				
