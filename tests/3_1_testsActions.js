@@ -184,35 +184,19 @@ describe("actions", function() {
 
 	});
 
-	it("should create data", function(done) {
+	it("should create data with action", function(done) {
+
+		let actionBase;
 
 		container.get("actionstypes").lastInserted().then(function(actiontype) {
 
 			return container.get("actions").add({
 				"type": actiontype,
-				"name": "actionbase",
-				"params": "{\"test\": \"test\"}"
+				"name": "actionbase"
 			});
 
 		}).then(function(action) {
-
-			assert.strictEqual("actionbase", action.name, "Action added is not valid (name)");
-			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
-			assert.strictEqual("actiontype", action.type.name, "Action added is not valid (type name)");
-			assert.deepStrictEqual({"test": "test"}, action.params, "Action added is not valid (params)");
-
-			done();
-
-		}).catch(done);
-
-	});
-
-	it("should create data with action", function(done) {
-
-		let actionBase;
-
-		container.get("actions").lastInserted().then(function(_action) {
-			actionBase = _action;
+			actionBase = action;
 			return container.get("actionstypes").lastInserted();
 		}).then(function(actiontype) {
 
@@ -228,8 +212,8 @@ describe("actions", function() {
 			assert.strictEqual("actionbase", action.name, "Action added is not valid (name)");
 			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
 			assert.strictEqual("actiontype", action.type.name, "Action added is not valid (type name)");
-			assert.deepStrictEqual({"test": "test"}, action.params, "Action added is not valid (params)");
 			assert.strictEqual("actionafter", action.after.name, "Action added is not valid (after name)");
+			assert.strictEqual("action", action.after.nodetype, "Action added is not valid (after nodetype)");
 
 			done();
 
@@ -266,8 +250,8 @@ describe("actions", function() {
 			assert.strictEqual("actionbase", action.name, "Action added is not valid (name)");
 			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
 			assert.strictEqual("actiontype", action.type.name, "Action added is not valid (type name)");
-			assert.deepStrictEqual({"test": "test"}, action.params, "Action added is not valid (params)");
 			assert.strictEqual("conditionafter", action.after.name, "Action added is not valid (after name)");
+			assert.strictEqual("condition", action.after.nodetype, "Action added is not valid (after nodetype)");
 
 			done();
 
