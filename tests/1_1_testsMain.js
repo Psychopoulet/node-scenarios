@@ -24,6 +24,9 @@ describe("main", function() {
 
 				assert.strictEqual(true, (!err && stats && stats.isFile()), "Database was not created.");
 
+				assert.strictEqual(true, container.has("junctions"), "Junctions is not instancied");
+				assert.strictEqual(true, container.get("junctions") instanceof require(path.join(__dirname, "..", "lib", "models", "junctions.js")), "Junctions is not a correct instance");
+
 				assert.strictEqual(true, container.has("scenarios"), "Scenarios is not instancied");
 				assert.strictEqual(true, container.get("scenarios") instanceof require(path.join(__dirname, "..", "lib", "models", "scenarios.js")), "Scenarios is not a correct instance");
 

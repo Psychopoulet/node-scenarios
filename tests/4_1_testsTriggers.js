@@ -40,7 +40,7 @@ describe("triggers", function() {
 
 	it("should return the last inserted data", function(done) {
 
-		container.get("triggers").lastInserted().then(function(trigger) {
+		container.get("triggers").last().then(function(trigger) {
 			assert.strictEqual("test", trigger.code, "Trigger added is not valid (code)");
 			assert.strictEqual("test", trigger.name, "Trigger added is not valid (name)");
 			done();
@@ -77,7 +77,7 @@ describe("triggers", function() {
 
 	it("should edit last inserted data", function(done) {
 
-		container.get("triggers").lastInserted().then(function(trigger) {
+		container.get("triggers").last().then(function(trigger) {
 			trigger.name = "test2";
 			return container.get("triggers").edit(trigger);
 		}).then(function(trigger) {
@@ -93,7 +93,7 @@ describe("triggers", function() {
 
 		container.get("scenarios").add({ name: "test", code: "test" }).then(function(scenario) {
 
-			container.get("triggers").lastInserted().then(function(trigger) {
+			container.get("triggers").last().then(function(trigger) {
 				return container.get("triggers").linkToScenario(scenario, trigger);
 			}).then(function() {
 				done();
@@ -106,7 +106,7 @@ describe("triggers", function() {
 
 	it("should get linked scenarios", function(done) {
 
-		container.get("triggers").lastInserted().then(function(trigger) {
+		container.get("triggers").last().then(function(trigger) {
 			return container.get("scenarios").search({ trigger: trigger });
 		}).then(function(scenarios) {
 
@@ -120,9 +120,9 @@ describe("triggers", function() {
 
 	it("should unlink to scenario", function(done) {
 
-		container.get("scenarios").lastInserted().then(function(scenario) {
+		container.get("scenarios").last().then(function(scenario) {
 
-			container.get("triggers").lastInserted().then(function(trigger) {
+			container.get("triggers").last().then(function(trigger) {
 				return container.get("triggers").unlinkToScenario(scenario, trigger);
 			}).then(function() {
 				done();
@@ -135,7 +135,7 @@ describe("triggers", function() {
 
 	it("should get linked scenarios", function(done) {
 
-		container.get("triggers").lastInserted().then(function(trigger) {
+		container.get("triggers").last().then(function(trigger) {
 			return container.get("scenarios").search({ trigger: trigger });
 		}).then(function(scenarios) {
 
@@ -149,10 +149,10 @@ describe("triggers", function() {
 
 	it("should delete last inserted data", function(done) {
 
-		container.get("triggers").lastInserted().then(function(trigger) {
+		container.get("triggers").last().then(function(trigger) {
 			return container.get("triggers").delete(trigger);
 		}).then(function() {
-			return container.get("triggers").lastInserted();
+			return container.get("triggers").last();
 		}).then(function(trigger) {
 
 			assert.strictEqual(null, trigger, "Trigger returned is not valid");

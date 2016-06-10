@@ -52,7 +52,7 @@ describe("conditions", function() {
 
 	it("should return the last inserted data", function(done) {
 
-		container.get("conditions").lastInserted().then(function(condition) {
+		container.get("conditions").last().then(function(condition) {
 			assert.strictEqual("test", condition.name, "Condition added is not valid (params)");
 			done();
 		}).catch(done);
@@ -79,7 +79,7 @@ describe("conditions", function() {
 
 	it("should edit last inserted data", function(done) {
 
-		container.get("conditions").lastInserted().then(function(condition) {
+		container.get("conditions").last().then(function(condition) {
 			condition.name = "test2";
 			condition.active = false;
 			return container.get("conditions").edit(condition);
@@ -95,10 +95,10 @@ describe("conditions", function() {
 
 	it("should delete last inserted data", function(done) {
 
-		container.get("conditions").lastInserted().then(function(condition) {
+		container.get("conditions").last().then(function(condition) {
 			return container.get("conditions").delete(condition);
 		}).then(function() {
-			return container.get("conditions").lastInserted();
+			return container.get("conditions").last();
 		}).then(function(condition) {
 			
 			assert.strictEqual(null, condition, "Condition returned is not valid");
@@ -112,11 +112,10 @@ describe("conditions", function() {
 
 		let conditionBase;
 
-		container.get("conditionstypes").lastInserted().then(function(conditiontype) {
+		container.get("conditionstypes").last().then(function(conditiontype) {
 
 			return container.get("conditions").add({
 				"type": conditiontype,
-				"code": "conditionbase",
 				"name": "conditionbase",
 				"value": "conditionbase"
 			});
@@ -134,7 +133,7 @@ describe("conditions", function() {
 
 			return container.get("actions").add({
 				"type": actiontype,
-				"name": "actionon*"
+				"name": "actiononyes"
 			});
 
 		}).then(function(actiononyes) {
@@ -146,11 +145,18 @@ describe("conditions", function() {
 			assert.strictEqual("conditiontype", condition.type.code, "Condition added is not valid (type code)");
 			assert.strictEqual("conditiontype", condition.type.name, "Condition added is not valid (type name)");
 			assert.strictEqual("action", condition.onyes.nodetype, "Condition added is not valid (onyes nodetype)");
-			assert.strictEqual("actionon*", condition.onyes.name, "Condition added is not valid (onyes name)");
-			assert.strictEqual(null, condition.onno, "Condition added is not valid (onno name)");
+			assert.strictEqual("actiononyes", condition.onyes.name, "Condition added is not valid (onyes name)");
+			assert.strictEqual(null, condition.onno, "Condition added is not valid (onno)");
 
 
-			return container.get("actions").lastInserted();
+			return container.get("actionstypes").last();
+
+		}).then(function(actiontype) {
+
+			return container.get("actions").add({
+				"type": actiontype,
+				"name": "actiononno"
+			});
 
 		}).then(function(actiononno) {
 			return container.get("conditions").linkOnNoAction(conditionBase, actiononno);
@@ -161,52 +167,118 @@ describe("conditions", function() {
 			assert.strictEqual("conditiontype", condition.type.code, "Condition added is not valid (type code)");
 			assert.strictEqual("conditiontype", condition.type.name, "Condition added is not valid (type name)");
 			assert.strictEqual("action", condition.onno.nodetype, "Condition added is not valid (onno nodetype)");
-			assert.strictEqual("actionon*", condition.onno.name, "Condition added is not valid (onno name)");
+			assert.strictEqual("actiononno", condition.onno.name, "Condition added is not valid (onno name)");
 			assert.strictEqual("action", condition.onyes.nodetype, "Condition added is not valid (onyes nodetype)");
-			assert.strictEqual("actionon*", condition.onyes.name, "Condition added is not valid (onyes name)");
+			assert.strictEqual("actiononyes", condition.onyes.name, "Condition added is not valid (onyes)");
+
+			return container.get("conditions").unlinkOnYes(condition);
+
+		}).then(function(condition) {
+
+			assert.strictEqual("conditionbase", condition.name, "Condition added is not valid (name)");
+			assert.strictEqual("conditionbase", condition.value, "Condition added is not valid (value)");
+			assert.strictEqual("conditiontype", condition.type.code, "Condition added is not valid (type code)");
+			assert.strictEqual("conditiontype", condition.type.name, "Condition added is not valid (type name)");
+			assert.strictEqual("action", condition.onno.nodetype, "Condition added is not valid (onno nodetype)");
+			assert.strictEqual("actiononno", condition.onno.name, "Condition added is not valid (onno name)");
+			assert.strictEqual(null, condition.onyes, "Condition added is not valid (onyes)");
+
+			return container.get("conditions").unlinkOnNo(condition);
+
+		}).then(function(condition) {
+
+			assert.strictEqual("conditionbase", condition.name, "Condition added is not valid (name)");
+			assert.strictEqual("conditionbase", condition.value, "Condition added is not valid (value)");
+			assert.strictEqual("conditiontype", condition.type.code, "Condition added is not valid (type code)");
+			assert.strictEqual("conditiontype", condition.type.name, "Condition added is not valid (type name)");
+			assert.strictEqual(null, condition.onno, "Condition added is not valid (onno)");
+			assert.strictEqual(null, condition.onyes, "Condition added is not valid (onyes)");
 
 			done();
 
 		}).catch(done);
 
-
 	});
 
-	it.skip("should create data with condition", function(done) {
+	it("should create data with condition", function(done) {
 
 		let conditionBase;
 
-		container.get("conditions").search().then(function(conditions) {
+		container.get("conditions").last().then(function(condition) {
 
-			conditionBase = conditions[1];
+			conditionBase = condition;
 
-			return container.get("conditionstypes").add({
-				"code": "conditiontype",
-				"name": "conditiontype"
-			});
+			return container.get("conditionstypes").last();
 
 		}).then(function(conditiontype) {
 
 			return container.get("conditions").add({
-				type: conditiontype,
-				name: "conditionafter",
-				value: "test"
+				"type": conditiontype,
+				"name": "conditiononyes",
+				"value": "yes"
 			});
 
-		}).then(function(conditionafter) {
-			return container.get("conditions").linkAfterCondition(conditionBase, conditionafter);
-		}).then(function(action) {
+		}).then(function(conditiononyes) {
+			return container.get("conditions").linkOnYesCondition(conditionBase, conditiononyes);
+		}).then(function(condition) {
 
-			assert.strictEqual("actionbase", action.name, "Condition added is not valid (name)");
-			assert.strictEqual("conditiontype", action.type.code, "Condition added is not valid (type code)");
-			assert.strictEqual("conditiontype", action.type.name, "Condition added is not valid (type name)");
-			assert.deepStrictEqual({"test": "test"}, action.params, "Condition added is not valid (params)");
-			assert.strictEqual("conditionafter", action.after.name, "Condition added is not valid (after name)");
+			assert.strictEqual("conditionbase", condition.name, "Condition added is not valid (name)");
+			assert.strictEqual("conditionbase", condition.value, "Condition added is not valid (value)");
+			assert.strictEqual("conditiontype", condition.type.code, "Condition added is not valid (type code)");
+			assert.strictEqual("conditiontype", condition.type.name, "Condition added is not valid (type name)");
+			assert.strictEqual("condition", condition.onyes.nodetype, "Condition added is not valid (onyes nodetype)");
+			assert.strictEqual("conditiononyes", condition.onyes.name, "Condition added is not valid (onyes name)");
+			assert.strictEqual(null, condition.onno, "Condition added is not valid (onno)");
+
+			return container.get("conditionstypes").last();
+
+		}).then(function(conditiontype) {
+
+			return container.get("conditions").add({
+				"type": conditiontype,
+				"name": "conditiononno",
+				"value": "no"
+			});
+
+		}).then(function(conditiononno) {
+			return container.get("conditions").linkOnNoCondition(conditionBase, conditiononno);
+		}).then(function(condition) {
+
+			assert.strictEqual("conditionbase", condition.name, "Condition added is not valid (name)");
+			assert.strictEqual("conditionbase", condition.value, "Condition added is not valid (value)");
+			assert.strictEqual("conditiontype", condition.type.code, "Condition added is not valid (type code)");
+			assert.strictEqual("conditiontype", condition.type.name, "Condition added is not valid (type name)");
+			assert.strictEqual("condition", condition.onno.nodetype, "Condition added is not valid (onno nodetype)");
+			assert.strictEqual("conditiononno", condition.onno.name, "Condition added is not valid (onno name)");
+			assert.strictEqual("condition", condition.onyes.nodetype, "Condition added is not valid (onyes nodetype)");
+			assert.strictEqual("conditiononyes", condition.onyes.name, "Condition added is not valid (onyes)");
+
+			return container.get("conditions").unlinkOnYes(condition);
+
+		}).then(function(condition) {
+
+			assert.strictEqual("conditionbase", condition.name, "Condition added is not valid (name)");
+			assert.strictEqual("conditionbase", condition.value, "Condition added is not valid (value)");
+			assert.strictEqual("conditiontype", condition.type.code, "Condition added is not valid (type code)");
+			assert.strictEqual("conditiontype", condition.type.name, "Condition added is not valid (type name)");
+			assert.strictEqual("condition", condition.onno.nodetype, "Condition added is not valid (onno nodetype)");
+			assert.strictEqual("conditiononno", condition.onno.name, "Condition added is not valid (onno name)");
+			assert.strictEqual(null, condition.onyes, "Condition added is not valid (onyes)");
+
+			return container.get("conditions").unlinkOnNo(condition);
+
+		}).then(function(condition) {
+
+			assert.strictEqual("conditionbase", condition.name, "Condition added is not valid (name)");
+			assert.strictEqual("conditionbase", condition.value, "Condition added is not valid (value)");
+			assert.strictEqual("conditiontype", condition.type.code, "Condition added is not valid (type code)");
+			assert.strictEqual("conditiontype", condition.type.name, "Condition added is not valid (type name)");
+			assert.strictEqual(null, condition.onno, "Condition added is not valid (onno)");
+			assert.strictEqual(null, condition.onyes, "Condition added is not valid (onyes)");
 
 			done();
 
 		}).catch(done);
-
 
 	});
 

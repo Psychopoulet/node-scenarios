@@ -58,7 +58,7 @@ describe("scenarios", function() {
 
 		}).then(function(_action) {
 			action = _action;
-			return container.get("scenarios").lastInserted();
+			return container.get("scenarios").last();
 		}).then(function(scenario) {
 			return container.get("scenarios").linkStartAction(scenario, action);
 		}).then(function(scenario) {
@@ -92,7 +92,7 @@ describe("scenarios", function() {
 
 		}).then(function(_condition) {
 			condition = _condition;
-			return container.get("scenarios").lastInserted();
+			return container.get("scenarios").last();
 		}).then(function(scenario) {
 			return container.get("scenarios").linkStartCondition(scenario, condition);
 		}).then(function(scenario) {
@@ -109,7 +109,7 @@ describe("scenarios", function() {
 
 	it("should unlink start", function(done) {
 
-		return container.get("scenarios").lastInserted().then(function(scenario) {
+		return container.get("scenarios").last().then(function(scenario) {
 			return container.get("scenarios").unlinkStart(scenario);
 		}).then(function(scenario) {
 
@@ -122,7 +122,7 @@ describe("scenarios", function() {
 
 	it("should return the last inserted data", function(done) {
 
-		container.get("scenarios").lastInserted().then(function(scenario) {
+		container.get("scenarios").last().then(function(scenario) {
 			assert.strictEqual("test", scenario.name, "Scenario added is not valid (params)");
 			done();
 		}).catch(done);
@@ -149,7 +149,7 @@ describe("scenarios", function() {
 
 	it("should edit last inserted data", function(done) {
 
-		container.get("scenarios").lastInserted().then(function(scenario) {
+		container.get("scenarios").last().then(function(scenario) {
 			scenario.name = "test2";
 			scenario.active = false;
 			return container.get("scenarios").edit(scenario);
@@ -167,7 +167,7 @@ describe("scenarios", function() {
 
 		container.get("triggers").add({ name: "test", code: "test" }).then(function(trigger) {
 
-			container.get("scenarios").lastInserted().then(function(scenario) {
+			container.get("scenarios").last().then(function(scenario) {
 				return container.get("scenarios").linkToTrigger(scenario, trigger);
 			}).then(function() {
 				done();
@@ -179,7 +179,7 @@ describe("scenarios", function() {
 
 	it("should get linked triggers", function(done) {
 
-		container.get("scenarios").lastInserted().then(function(scenario) {
+		container.get("scenarios").last().then(function(scenario) {
 			return container.get("triggers").search({ scenario: scenario });
 		}).then(function(triggers) {
 
@@ -193,9 +193,9 @@ describe("scenarios", function() {
 
 	it("should unlink to trigger", function(done) {
 
-		container.get("triggers").lastInserted().then(function(trigger) {
+		container.get("triggers").last().then(function(trigger) {
 
-			container.get("scenarios").lastInserted().then(function(scenario) {
+			container.get("scenarios").last().then(function(scenario) {
 				return container.get("scenarios").unlinkToTrigger(scenario, trigger);
 			}).then(function() {
 				done();
@@ -207,7 +207,7 @@ describe("scenarios", function() {
 
 	it("should get linked triggers", function(done) {
 
-		container.get("scenarios").lastInserted().then(function(scenario) {
+		container.get("scenarios").last().then(function(scenario) {
 			return container.get("triggers").search({ scenario: scenario });
 		}).then(function(triggers) {
 
@@ -221,10 +221,10 @@ describe("scenarios", function() {
 
 	it("should delete last inserted data", function(done) {
 
-		container.get("scenarios").lastInserted().then(function(scenario) {
+		container.get("scenarios").last().then(function(scenario) {
 			return container.get("scenarios").delete(scenario);
 		}).then(function() {
-			return container.get("scenarios").lastInserted();
+			return container.get("scenarios").last();
 		}).then(function(scenario) {
 			
 			assert.strictEqual(null, scenario, "Scenario returned is not valid");

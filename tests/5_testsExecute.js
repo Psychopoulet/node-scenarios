@@ -49,7 +49,7 @@ describe("execute", function() {
 
 		it("should create scenario", function(done) {
 
-			container.get("conditions").lastInserted().then(function() {
+			container.get("conditions").last().then(function() {
 				return container.get("scenarios").add({ "name": "test", "active": true });
 			}).then(function() { done(); }).catch(done);
 
@@ -59,9 +59,9 @@ describe("execute", function() {
 
 			let condition;
 
-			container.get("conditions").lastInserted().then(function(_condition) {
+			container.get("conditions").last().then(function(_condition) {
 				condition = _condition;
-				return container.get("scenarios").lastInserted();
+				return container.get("scenarios").last();
 			}).then(function(scenario) {
 				return container.get("scenarios").linkStartCondition(scenario, condition);
 			}).then(function() { done(); }).catch(done);
@@ -72,7 +72,7 @@ describe("execute", function() {
 
 			let condition;
 
-			container.get("conditions").lastInserted().then(function(_condition) {
+			container.get("conditions").last().then(function(_condition) {
 				condition = _condition;
 				return container.get("actions").searchOne({ name: "console yes" });
 			}).then(function(onyes) {
@@ -91,8 +91,8 @@ describe("execute", function() {
 
 		it("should return a builded way", function(done) {
 
-			container.get("conditions").lastInserted().then(function() {
-				return container.get("scenarios").lastInserted();
+			container.get("conditions").last().then(function() {
+				return container.get("scenarios").last();
 			}).then(function(scenario) {
 				return container.get("scenarios").getWay(scenario);
 			}).then(function(way) {

@@ -53,7 +53,7 @@ describe("actions", function() {
 
 	it("should return the last inserted data", function(done) {
 
-		container.get("actions").lastInserted().then(function(action) {
+		container.get("actions").last().then(function(action) {
 
 			assert.strictEqual("actionbase", action.name, "Action added is not valid (name)");
 			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
@@ -112,7 +112,7 @@ describe("actions", function() {
 
 	it("should edit last inserted data", function(done) {
 
-		container.get("actions").lastInserted().then(function(action) {
+		container.get("actions").last().then(function(action) {
 			action.name = "test2";
 			return container.get("actions").edit(action);
 		}).then(function(action) {
@@ -126,7 +126,7 @@ describe("actions", function() {
 
 	it("should bind wrong executer", function(done) {
 
-		container.get("actionstypes").lastInserted().then(function(actiontype) {
+		container.get("actionstypes").last().then(function(actiontype) {
 			
 			container.get("actions").bindExecuter(actiontype).then(function() {
 				assert.ok(false, "Wrong executer does not generate error");
@@ -154,14 +154,14 @@ describe("actions", function() {
 
 	it("should bind executer", function(done) {
 
-		container.get("actionstypes").lastInserted().then(function(actiontype) {
+		container.get("actionstypes").last().then(function(actiontype) {
 
 			return container.get("actions").bindExecuter(actiontype, function(action) {
 				assert.strictEqual("test2", action.name, "Action returned is not valid");
 			});
 
 		}).then(function() {
-			return container.get("actions").lastInserted();
+			return container.get("actions").last();
 		}).then(function(action) {
 
 			container.get("actions").execute(action);
@@ -173,10 +173,10 @@ describe("actions", function() {
 
 	it("should delete last inserted data", function(done) {
 
-		container.get("actions").lastInserted().then(function(action) {
+		container.get("actions").last().then(function(action) {
 			return container.get("actions").delete(action);
 		}).then(function() {
-			return container.get("actions").lastInserted();
+			return container.get("actions").last();
 		}).then(function(action) {
 			assert.strictEqual(null, action, "Action returned is not valid (name)");
 			done();
@@ -188,7 +188,7 @@ describe("actions", function() {
 
 		let actionBase;
 
-		container.get("actionstypes").lastInserted().then(function(actiontype) {
+		container.get("actionstypes").last().then(function(actiontype) {
 
 			return container.get("actions").add({
 				"type": actiontype,
@@ -197,7 +197,7 @@ describe("actions", function() {
 
 		}).then(function(action) {
 			actionBase = action;
-			return container.get("actionstypes").lastInserted();
+			return container.get("actionstypes").last();
 		}).then(function(actiontype) {
 
 			return container.get("actions").add({
@@ -214,6 +214,15 @@ describe("actions", function() {
 			assert.strictEqual("actiontype", action.type.name, "Action added is not valid (type name)");
 			assert.strictEqual("actionafter", action.after.name, "Action added is not valid (after name)");
 			assert.strictEqual("action", action.after.nodetype, "Action added is not valid (after nodetype)");
+
+			return container.get("actions").unlinkAfter(actionBase);
+
+		}).then(function(action) {
+
+			assert.strictEqual("actionbase", action.name, "Action added is not valid (name)");
+			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
+			assert.strictEqual("actiontype", action.type.name, "Action added is not valid (type name)");
+			assert.strictEqual(null, action.after, "Action added is not valid (after)");
 
 			done();
 
@@ -252,6 +261,15 @@ describe("actions", function() {
 			assert.strictEqual("actiontype", action.type.name, "Action added is not valid (type name)");
 			assert.strictEqual("conditionafter", action.after.name, "Action added is not valid (after name)");
 			assert.strictEqual("condition", action.after.nodetype, "Action added is not valid (after nodetype)");
+
+			return container.get("actions").unlinkAfter(actionBase);
+
+		}).then(function(action) {
+
+			assert.strictEqual("actionbase", action.name, "Action added is not valid (name)");
+			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
+			assert.strictEqual("actiontype", action.type.name, "Action added is not valid (type name)");
+			assert.strictEqual(null, action.after, "Action added is not valid (after)");
 
 			done();
 

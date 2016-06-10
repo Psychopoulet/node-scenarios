@@ -40,7 +40,7 @@ describe("actionstypes", function() {
 
 	it("should return the last inserted data", function(done) {
 
-		container.get("actionstypes").lastInserted().then(function(actiontype) {
+		container.get("actionstypes").last().then(function(actiontype) {
 			assert.strictEqual("test", actiontype.code, "ActionType added is not valid (code)");
 			assert.strictEqual("test", actiontype.name, "ActionType added is not valid (name)");
 			done();
@@ -77,7 +77,7 @@ describe("actionstypes", function() {
 
 	it("should edit last inserted data", function(done) {
 
-		container.get("actionstypes").lastInserted().then(function(actiontype) {
+		container.get("actionstypes").last().then(function(actiontype) {
 			actiontype.code = "test2";
 			actiontype.name = "test2";
 			return container.get("actionstypes").edit(actiontype);
@@ -91,10 +91,10 @@ describe("actionstypes", function() {
 
 	it("should delete last inserted data", function(done) {
 
-		container.get("actionstypes").lastInserted().then(function(actiontype) {
+		container.get("actionstypes").last().then(function(actiontype) {
 			return container.get("actionstypes").delete(actiontype);
 		}).then(function() {
-			return container.get("actionstypes").lastInserted();
+			return container.get("actionstypes").last();
 		}).then(function(actiontype) {
 			assert.strictEqual(null, actiontype, "ActionType returned is not valid");
 			done();
