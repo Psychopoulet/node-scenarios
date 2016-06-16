@@ -1,5 +1,5 @@
 {
-  "name": "simplescenarios",
+  "name": "node-scenarios",
   "version": "1.0.0",
   "description": "A simple way to manage scenarios, with customizable triggers/conditions/actions",
   "main": "lib/main.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/Psychopoulet/simplescenarios.git"
+    "url": "git://github.com/Psychopoulet/node-scenarios.git"
   },
   "keywords": [
     "scenario",
@@ -20,7 +20,7 @@
   "author": "Sébastien VIDAL",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Psychopoulet/simplescenarios/issues"
+    "url": "https://github.com/Psychopoulet/node-scenarios/issues"
   },
   "dependencies": {
     "sqlite3": "^3.1.4",
@@ -34,5 +34,5 @@
     "gulp-mocha": "^2.0.0",
     "gulp-plumber": "^1.0.0"
   },
-  "homepage": "https://github.com/Psychopoulet/simplescenarios#readme"
+  "homepage": "https://github.com/Psychopoulet/node-scenarios#readme"
 }
