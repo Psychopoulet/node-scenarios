@@ -27,53 +27,53 @@ describe("execute", function() {
 
 	describe("prepare way", function() {
 
-		it("should create actions", function(done) {
+		it("should create actions", function() {
 
 			let actiontype;
 
-			container.get("actionstypes").add({ code: "CONSOLE", "name" : "console" }).then(function(_actiontype) {
+			return container.get("actionstypes").add({ code: "CONSOLE", "name" : "console" }).then(function(_actiontype) {
 				actiontype = _actiontype;
 				return container.get("actions").add({ "name": "console yes", "type": actiontype, "params": "\"yes\"" });
 			}).then(function() {
 				return container.get("actions").add({ "name": "console no", "type": actiontype, "params": "\"no\"" });
-			}).then(function() { done(); }).catch(done);
+			});
 
 		});
 
-		it("should create conditions", function(done) {
+		it("should create conditions", function() {
 
-			container.get("conditionstypes").add({ code: "EQUAL", "name" : "equal" }).then(function(conditiontype) {
+			return container.get("conditionstypes").add({ code: "BOOLEQUAL", "name" : "equal" }).then(function(conditiontype) {
 				return container.get("conditions").add({ "name": "true", "type": conditiontype, "value": "true" });
-			}).then(function() { done(); }).catch(done);
+			});
 
 		});
 
-		it("should create scenario", function(done) {
+		it("should create scenario", function() {
 
-			container.get("conditions").last().then(function() {
+			return container.get("conditions").last().then(function() {
 				return container.get("scenarios").add({ "name": "test", "active": true });
-			}).then(function() { done(); }).catch(done);
+			});
 
 		});
 
-		it("should link scenario to condition", function(done) {
+		it("should link scenario to condition", function() {
 
 			let condition;
 
-			container.get("conditions").last().then(function(_condition) {
+			return container.get("conditions").last().then(function(_condition) {
 				condition = _condition;
 				return container.get("scenarios").last();
 			}).then(function(scenario) {
 				return container.get("scenarios").linkStartCondition(scenario, condition);
-			}).then(function() { done(); }).catch(done);
+			});
 
 		});
 
-		it("should link condition to actions", function(done) {
+		it("should link condition to actions", function() {
 
 			let condition;
 
-			container.get("conditions").last().then(function(_condition) {
+			return container.get("conditions").last().then(function(_condition) {
 				condition = _condition;
 				return container.get("actions").searchOne({ name: "console yes" });
 			}).then(function(onyes) {
@@ -82,7 +82,7 @@ describe("execute", function() {
 				return container.get("actions").searchOne({ name: "console no" });
 			}).then(function(onno) {
 				return container.get("conditions").linkOnNoAction(condition, onno);
-			}).then(function() { done(); }).catch(done);
+			});
 
 		});
 
@@ -90,9 +90,21 @@ describe("execute", function() {
 
 	describe("return way", function() {
 
-		it("should return a builded way", function(done) {
+		it("should test an inexistant scenario", function() {
 
-			container.get("conditions").last().then(function() {
+			return container.get("scenarios").getWay({ id: 10 }).then(function() {
+				return Promise.reject("The scenario was found");
+			}).catch(function(err) {
+				assert.strictEqual("Impossible to find this scenario.", err, "Error returned is not valid");
+				return Promise.resolve();
+			});
+
+		});
+
+
+		it("should return a builded way", function() {
+
+			return container.get("conditions").last().then(function() {
 				return container.get("scenarios").last();
 			}).then(function(scenario) {
 				return container.get("scenarios").getWay(scenario);
@@ -110,7 +122,7 @@ describe("execute", function() {
 					
 					assert.strictEqual("object", typeof scenario.start.type, "Scenario returned is not valid (start type)");
 
-						assert.strictEqual("EQUAL", scenario.start.type.code, "Scenario returned is not valid (start type code)");
+						assert.strictEqual("BOOLEQUAL", scenario.start.type.code, "Scenario returned is not valid (start type code)");
 						assert.strictEqual("equal", scenario.start.type.name, "Scenario returned is not valid (start type name)");
 
 					assert.strictEqual("object", typeof scenario.start.onyes, "Scenario returned is not valid (start onyes)");
@@ -137,9 +149,72 @@ describe("execute", function() {
 							assert.strictEqual("CONSOLE", scenario.start.onno.type.code, "Scenario returned is not valid (start onno type code)");
 							assert.strictEqual("console", scenario.start.onno.type.name, "Scenario returned is not valid (start onno type name)");
 
-				done();
+			});
 
-			}).catch(done);
+		});
+
+		it("should execute a scenario", function() {
+
+			container.get("conditionstypes").searchOne({ code: "BOOLEQUAL" }).then(function(conditiontype) {
+
+				if (!conditiontype) {
+					return Promise.reject("There is no conditiontype with \"BOOLEQUAL\" code.");
+				}
+				else {
+
+					return container.get("conditions").bindExecuter(conditiontype, function(condition, data) {
+
+						if ("undefined" === typeof data.condition) {
+							return Promise.reject("There is no \"condition\" data.");
+						}
+							else if ("boolean" !== typeof data.condition) {
+								return Promise.reject("\"condition\" data is not a boolean.");
+							}
+						else {
+							return Promise.resolve(data.condition);
+						}
+
+					});
+
+				}
+
+			}).then(function() {
+				return container.get("actionstypes").searchOne({ code: "CONSOLE" });
+			}).then(function(actiontype) {
+
+				if (!actiontype) {
+					return Promise.reject("There is no actiontype with \"CONSOLE\" code.");
+				}
+				else {
+
+					let cn = console;
+
+					return container.get("actions").bindExecuter(actiontype, function(action) {
+
+						cn.log(action.params);
+						return Promise.resolve();
+
+					});
+
+				}
+
+			}).then(function() {
+				return container.get("scenarios").last();
+			}).then(function(scenario) {
+
+				return container.get("scenarios").execute(scenario, {
+					condition: true
+				});
+
+			}).then(function() {
+				return container.get("scenarios").last();
+			}).then(function(scenario) {
+
+				return container.get("scenarios").execute(scenario, {
+					condition: false
+				});
+
+			});
 
 		});
 

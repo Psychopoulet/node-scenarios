@@ -22,12 +22,12 @@ describe("junctions", function() {
 	});
 
 	after(function() {
-		//return SimpleScenarios.delete();
+		return SimpleScenarios.delete();
 	});
 
-	it("should create action junction", function(done) {
+	it("should create action junction", function() {
 
-		container.get("actionstypes").add({
+		return container.get("actionstypes").add({
 			"code": "actiontype",
 			"name": "actiontype"
 		}).then(function(actiontype) {
@@ -44,15 +44,14 @@ describe("junctions", function() {
 		}).then(function(junctionid) {
 
 			assert.strictEqual(1, junctionid, "ActionJunction added is not valid");
-			done();
 
-		}).catch(done);
+		});
 
 	});
 
-	it("should create condition junction", function(done) {
+	it("should create condition junction", function() {
 
-		container.get("conditionstypes").add({
+		return container.get("conditionstypes").add({
 			"code": "conditiontype",
 			"name": "conditiontype"
 		}).then(function(conditiontype) {
@@ -70,9 +69,8 @@ describe("junctions", function() {
 		}).then(function(junctionid) {
 
 			assert.strictEqual(2, junctionid, "ConditionJunction added is not valid");
-			done();
 
-		}).catch(done);
+		});
 
 	});
 
