@@ -131,6 +131,14 @@ describe("triggers", function() {
 
 	});
 
+	it("should execute linked scenarios", function() {
+
+		return container.get("triggers").last().then(function(trigger) {
+			return container.get("triggers").execute(trigger, {});
+		});
+
+	});
+
 	it("should delete last inserted data", function() {
 
 		return container.get("triggers").last().then(function(trigger) {
