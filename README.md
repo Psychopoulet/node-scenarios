@@ -18,6 +18,7 @@ $ npm install node-scenarios
 
 
 ### node-scenarios
+- ``` static class abstract ``` abstract class to extend -> MyClass extends "node-scenarios".abstract
 - ``` static init() : return Promise instance => then(node-containerpattern container) ``` initialize database and return a node-containerpattern instance
 - ``` static release() : return Promise instance ``` close database connection
 - ``` static delete() : return Promise instance ``` release & delete database file
