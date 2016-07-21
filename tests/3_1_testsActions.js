@@ -34,13 +34,54 @@ describe("actions", function() {
 
 			return container.get("actions").add({
 				"type": actiontype,
-				"name": "actionbase",
-				"params": "{\"test\": \"test\"}"
+				"name": "actionbase"
 			});
 
 		}).then(function(action) {
 
 			assert.strictEqual("actionbase", action.name, "Action added is not valid (name)");
+			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
+			assert.strictEqual("actiontype", action.type.name, "Action added is not valid (type name)");
+			assert.deepStrictEqual("", action.params, "Action added is not valid (params)");
+
+		});
+
+	});
+
+	it("should create data with string params", function() {
+
+		return container.get("actionstypes").searchOne({ "code": "actiontype" }).then(function(actiontype) {
+
+			return container.get("actions").add({
+				"type": actiontype,
+				"name": "actionbasewithstringparams",
+				"params": "{\"test\": \"test\"}"
+			});
+
+		}).then(function(action) {
+
+			assert.strictEqual("actionbasewithstringparams", action.name, "Action added is not valid (name)");
+			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
+			assert.strictEqual("actiontype", action.type.name, "Action added is not valid (type name)");
+			assert.deepStrictEqual({"test": "test"}, action.params, "Action added is not valid (params)");
+
+		});
+
+	});
+
+	it("should create data with object params", function() {
+
+		return container.get("actionstypes").searchOne({ "code": "actiontype" }).then(function(actiontype) {
+
+			return container.get("actions").add({
+				"type": actiontype,
+				"name": "actionbasewithobjectparams",
+				"params": {"test": "test"}
+			});
+
+		}).then(function(action) {
+
+			assert.strictEqual("actionbasewithobjectparams", action.name, "Action added is not valid (name)");
 			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
 			assert.strictEqual("actiontype", action.type.name, "Action added is not valid (type name)");
 			assert.deepStrictEqual({"test": "test"}, action.params, "Action added is not valid (params)");
@@ -53,7 +94,7 @@ describe("actions", function() {
 
 		return container.get("actions").last().then(function(action) {
 
-			assert.strictEqual("actionbase", action.name, "Action added is not valid (name)");
+			assert.strictEqual("actionbasewithobjectparams", action.name, "Action added is not valid (name)");
 			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
 			assert.strictEqual("actiontype", action.type.name, "Action added is not valid (type name)");
 			assert.deepStrictEqual({"test": "test"}, action.params, "Action added is not valid (params)");
@@ -81,7 +122,7 @@ describe("actions", function() {
 	it("should return all the data with the action type having the code \"actiontype\"", function() {
 
 		return container.get("actions").search({ "type": { "code": "actiontype" } }).then(function(actions) {
-			assert.strictEqual(1, actions.length, "Actions returned are not valid");
+			assert.strictEqual(3, actions.length, "Actions returned are not valid");
 		});
 
 	});
@@ -89,7 +130,7 @@ describe("actions", function() {
 	it("should return all the data with the action type having the name \"actiontype\"", function() {
 
 		return container.get("actions").search({ "type": { "name": "actiontype" } }).then(function(actions) {
-			assert.strictEqual(1, actions.length, "Actions returned are not valid");
+			assert.strictEqual(3, actions.length, "Actions returned are not valid");
 		});
 
 	});
@@ -153,7 +194,12 @@ describe("actions", function() {
 		}).then(function() {
 			return container.get("actions").last();
 		}).then(function(action) {
-			assert.strictEqual(null, action, "Action returned is not valid (name)");
+
+			assert.strictEqual("actionbasewithstringparams", action.name, "Action returned is not valid (name)");
+			assert.strictEqual("actiontype", action.type.code, "Action returned is not valid (type code)");
+			assert.strictEqual("actiontype", action.type.name, "Action returned is not valid (type name)");
+			assert.deepStrictEqual({"test": "test"}, action.params, "Action returned is not valid (params)");
+
 		});
 
 	});
