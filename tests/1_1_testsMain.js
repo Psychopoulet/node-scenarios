@@ -6,19 +6,19 @@
 			assert = require("assert"),
 			fs = require("fs"),
 			
-			SimpleScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
+			NodeScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
 
 // tests
 
 describe("main without given file", function() {
 
 	before(function() {
-		return SimpleScenarios.delete();
+		return NodeScenarios.delete();
 	});
 
 	it("should create database", function(done) {
 
-		SimpleScenarios.init().then(function (container) {
+		NodeScenarios.init().then(function (container) {
 
 			fs.stat(path.join(__dirname, "..", "lib", "database.sqlite3"), function(err, stats) {
 
@@ -52,11 +52,11 @@ describe("main without given file", function() {
 	}).timeout(5000);
 
 	it("should release database", function() {
-		return SimpleScenarios.release();
+		return NodeScenarios.release();
 	});
 
 	it("should delete database", function() {
-		return SimpleScenarios.delete();
+		return NodeScenarios.delete();
 	});
 
 });
@@ -64,14 +64,14 @@ describe("main without given file", function() {
 describe("main with given file", function() {
 
 	before(function() {
-		return SimpleScenarios.delete();
+		return NodeScenarios.delete();
 	});
 
 	it("should create database", function(done) {
 
 		let db = path.join(__dirname, "test.sqlite3");
 
-		SimpleScenarios.init(db).then(function (container) {
+		NodeScenarios.init(db).then(function (container) {
 
 			fs.stat(db, function(err, stats) {
 
@@ -105,11 +105,11 @@ describe("main with given file", function() {
 	}).timeout(5000);
 
 	it("should release database", function() {
-		return SimpleScenarios.release();
+		return NodeScenarios.release();
 	});
 
 	it("should delete database", function() {
-		return SimpleScenarios.delete();
+		return NodeScenarios.delete();
 	});
 
 });

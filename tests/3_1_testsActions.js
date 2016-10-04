@@ -3,7 +3,7 @@
 // deps
 
 	const 	assert = require("assert"),
-			SimpleScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
+			NodeScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
 
 // tests
 
@@ -13,8 +13,8 @@ describe("actions", function() {
 
 	before(function() {
 
-		return SimpleScenarios.delete().then(function () {
-			return SimpleScenarios.init();
+		return NodeScenarios.delete().then(function () {
+			return NodeScenarios.init();
 		}).then(function (_container) {
 			container = _container;
 		});
@@ -22,7 +22,7 @@ describe("actions", function() {
 	});
 
 	after(function() {
-		return SimpleScenarios.delete();
+		return NodeScenarios.delete();
 	});
 
 	it("should create data", function() {

@@ -3,7 +3,7 @@
 // deps
 
 	const 	assert = require("assert"),
-			SimpleScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
+			NodeScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
 
 // tests
 
@@ -13,8 +13,8 @@ describe("actionstypes", function() {
 
 	before(function() {
 
-		return SimpleScenarios.delete().then(function () {
-			return SimpleScenarios.init();
+		return NodeScenarios.delete().then(function () {
+			return NodeScenarios.init();
 		}).then(function (_container) {
 			container = _container;
 		});
@@ -22,14 +22,24 @@ describe("actionstypes", function() {
 	});
 
 	after(function() {
-		return SimpleScenarios.delete();
+		return NodeScenarios.delete();
 	});
 
 	it("should create data", function() {
 
 		return container.get("actionstypes").add({
-			"code": "test",
-			"name": "test"
+			"code": "test1",
+			"name": "test1"
+		}).then(function(actiontype) {
+
+			assert.strictEqual("test1", actiontype.code, "ActionType added is not valid (code)");
+			assert.strictEqual("test1", actiontype.name, "ActionType added is not valid (name)");
+
+			return container.get("actionstypes").add({
+				"code": "test",
+				"name": "test"
+			});
+
 		}).then(function(actiontype) {
 
 			assert.strictEqual("test", actiontype.code, "ActionType added is not valid (code)");
@@ -74,6 +84,46 @@ describe("actionstypes", function() {
 
 	});
 
+	it("should searche multiples ids", function() {
+
+		return container.get("actionstypes").search().then(function(actionstypes) {
+
+			let ids = [];
+			actionstypes.forEach((actiontype) => {
+				ids.push(actiontype.id);
+			});
+
+			return container.get("actionstypes").search({ ids: ids }).then(function(actionstypes) {
+
+				assert.notStrictEqual(null, actionstypes, "ActionsTypes returned are not valid");
+				assert.strictEqual(2, actionstypes.length, "ActionsTypes returned are not valid");
+
+			});
+			
+		});
+
+	});
+
+	it("should searche multiples codes", function() {
+
+		return container.get("actionstypes").search().then(function(actionstypes) {
+
+			let codes = [];
+			actionstypes.forEach((actiontype) => {
+				codes.push(actiontype.code);
+			});
+
+			return container.get("actionstypes").search({ codes: codes }).then(function(actionstypes) {
+
+				assert.notStrictEqual(null, actionstypes, "ActionsTypes returned are not valid");
+				assert.strictEqual(2, actionstypes.length, "ActionsTypes returned are not valid");
+
+			});
+			
+		});
+
+	});
+
 	it("should edit last inserted data", function() {
 
 		return container.get("actionstypes").last().then(function(actiontype) {
@@ -93,6 +143,13 @@ describe("actionstypes", function() {
 
 		return container.get("actionstypes").last().then(function(actiontype) {
 			return container.get("actionstypes").delete(actiontype);
+		}).then(function() {
+			return container.get("actionstypes").last();
+		}).then(function(actiontype) {
+
+			assert.notStrictEqual(null, actiontype, "ActionType returned is not valid");
+			return container.get("actionstypes").delete(actiontype);
+
 		}).then(function() {
 			return container.get("actionstypes").last();
 		}).then(function(actiontype) {

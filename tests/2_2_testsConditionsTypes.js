@@ -3,7 +3,7 @@
 // deps
 
 	const 	assert = require("assert"),
-			SimpleScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
+			NodeScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
 
 // tests
 
@@ -13,8 +13,8 @@ describe("conditionstypes", function() {
 
 	before(function() {
 
-		return SimpleScenarios.delete().then(function () {
-			return SimpleScenarios.init();
+		return NodeScenarios.delete().then(function () {
+			return NodeScenarios.init();
 		}).then(function (_container) {
 			container = _container;
 		});
@@ -22,29 +22,39 @@ describe("conditionstypes", function() {
 	});
 
 	after(function() {
-		return SimpleScenarios.delete();
+		return NodeScenarios.delete();
 	});
 
 	it("should create data", function() {
 
 		return container.get("conditionstypes").add({
-			"code": "test",
-			"name": "test"
-		}).then(function(actiontype) {
+			"code": "test1",
+			"name": "test1"
+		}).then(function(conditiontype) {
 
-			assert.strictEqual("test", actiontype.code, "ConditionType added is not valid (code)");
-			assert.strictEqual("test", actiontype.name, "ConditionType added is not valid (name)");
+			assert.strictEqual("test1", conditiontype.code, "ConditionType added is not valid (code)");
+			assert.strictEqual("test1", conditiontype.name, "ConditionType added is not valid (name)");
+
+			return container.get("conditionstypes").add({
+				"code": "test",
+				"name": "test"
+			});
+
+		}).then(function(conditiontype) {
+
+			assert.strictEqual("test", conditiontype.code, "ConditionType added is not valid (code)");
+			assert.strictEqual("test", conditiontype.name, "ConditionType added is not valid (name)");
 
 		});
-
+		
 	});
 
 	it("should return the last inserted data", function() {
 
-		return container.get("conditionstypes").last().then(function(actiontype) {
+		return container.get("conditionstypes").last().then(function(conditiontype) {
 
-			assert.strictEqual("test", actiontype.code, "ConditionType added is not valid (code)");
-			assert.strictEqual("test", actiontype.name, "ConditionType added is not valid (name)");
+			assert.strictEqual("test", conditiontype.code, "ConditionType added is not valid (code)");
+			assert.strictEqual("test", conditiontype.name, "ConditionType added is not valid (name)");
 
 		});
 
@@ -68,22 +78,62 @@ describe("conditionstypes", function() {
 
 	it("should return one data with the name \"test\"", function() {
 
-		return container.get("conditionstypes").searchOne({ "name": "test" }).then(function(actiontype) {
-			assert.notStrictEqual(null, actiontype, "ConditionType returned is not valid");
+		return container.get("conditionstypes").searchOne({ "name": "test" }).then(function(conditiontype) {
+			assert.notStrictEqual(null, conditiontype, "ConditionType returned is not valid");
+		});
+
+	});
+
+	it("should searche multiples ids", function() {
+
+		return container.get("conditionstypes").search().then(function(conditionstypes) {
+
+			let ids = [];
+			conditionstypes.forEach((conditiontype) => {
+				ids.push(conditiontype.id);
+			});
+
+			return container.get("conditionstypes").search({ ids: ids }).then(function(conditionstypes) {
+
+				assert.notStrictEqual(null, conditionstypes, "ConditionType returned are not valid");
+				assert.strictEqual(2, conditionstypes.length, "ConditionType returned are not valid");
+
+			});
+			
+		});
+
+	});
+
+	it("should searche multiples codes", function() {
+
+		return container.get("conditionstypes").search().then(function(conditionstypes) {
+
+			let codes = [];
+			conditionstypes.forEach((conditiontype) => {
+				codes.push(conditiontype.code);
+			});
+
+			return container.get("conditionstypes").search({ codes: codes }).then(function(conditionstypes) {
+
+				assert.notStrictEqual(null, conditionstypes, "ConditionType returned are not valid");
+				assert.strictEqual(2, conditionstypes.length, "ConditionType returned are not valid");
+
+			});
+			
 		});
 
 	});
 
 	it("should edit last inserted data", function() {
 
-		return container.get("conditionstypes").last().then(function(actiontype) {
-			actiontype.code = "test2";
-			actiontype.name = "test2";
-			return container.get("conditionstypes").edit(actiontype);
-		}).then(function(actiontype) {
+		return container.get("conditionstypes").last().then(function(conditiontype) {
+			conditiontype.code = "test2";
+			conditiontype.name = "test2";
+			return container.get("conditionstypes").edit(conditiontype);
+		}).then(function(conditiontype) {
 
-			assert.strictEqual("test2", actiontype.code, "ConditionType added is not valid (code)");
-			assert.strictEqual("test2", actiontype.name, "ConditionType added is not valid (name)");
+			assert.strictEqual("test2", conditiontype.code, "ConditionType added is not valid (code)");
+			assert.strictEqual("test2", conditiontype.name, "ConditionType added is not valid (name)");
 
 		});
 
@@ -91,12 +141,19 @@ describe("conditionstypes", function() {
 
 	it("should delete last inserted data", function() {
 
-		return container.get("conditionstypes").last().then(function(actiontype) {
-			return container.get("conditionstypes").delete(actiontype);
+		return container.get("conditionstypes").last().then(function(conditiontype) {
+			return container.get("conditionstypes").delete(conditiontype);
 		}).then(function() {
 			return container.get("conditionstypes").last();
-		}).then(function(actiontype) {
-			assert.strictEqual(null, actiontype, "ConditionType returned is not valid");
+		}).then(function(conditiontype) {
+
+			assert.notStrictEqual(null, conditiontype, "ConditionType returned is not valid");
+			return container.get("conditionstypes").delete(conditiontype);
+
+		}).then(function() {
+			return container.get("conditionstypes").last();
+		}).then(function(conditiontype) {
+			assert.strictEqual(null, conditiontype, "ConditionType returned is not valid");
 		});
 
 	});
