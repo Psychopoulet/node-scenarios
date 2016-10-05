@@ -20,7 +20,7 @@
 
 // tasks
 
-	gulp.task("eslint", function () {
+	gulp.task("eslint", () => {
 
 		return gulp.src(_allJSFiles)
 			.pipe(plumber())
@@ -39,7 +39,7 @@
 
 	});
 
-	gulp.task("mocha", ["eslint"], function () {
+	gulp.task("mocha", ["eslint"], () => {
 
 		return gulp.src(_unitTestsFiles)
 			.pipe(plumber())
@@ -49,7 +49,7 @@
 
 // watcher
 
-	gulp.task("watch", function () {
+	gulp.task("watch", () => {
 		gulp.watch(_allJSFiles, ["mocha"]);
 	});
 

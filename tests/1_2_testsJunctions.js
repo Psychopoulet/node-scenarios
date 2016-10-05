@@ -3,45 +3,45 @@
 // deps
 
 	const 	assert = require("assert"),
-			SimpleScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
+			NodeScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
 
 // tests
 
-describe("junctions", function() {
+describe("junctions", () => {
 
 	let container;
 
-	before(function() {
+	before(() => {
 
-		return SimpleScenarios.delete().then(function () {
-			return SimpleScenarios.init();
-		}).then(function (_container) {
+		return NodeScenarios.delete().then(() => {
+			return NodeScenarios.init();
+		}).then((_container) => {
 			container = _container;
 		});
 
 	});
 
-	after(function() {
-		return SimpleScenarios.delete();
+	after(() => {
+		return NodeScenarios.delete();
 	});
 
-	it("should create action junction", function() {
+	it("should create action junction", () => {
 
 		return container.get("actionstypes").add({
 			"code": "actiontype",
 			"name": "actiontype"
-		}).then(function(actiontype) {
+		}).then((actiontype) => {
 
 			return container.get("actions").add({
 				"type": actiontype,
 				"name": "action"
 			});
 
-		}).then(function(action) {
+		}).then((action) => {
 
 			return container.get("junctions").createActionJunctionId(action);
 
-		}).then(function(junctionid) {
+		}).then((junctionid) => {
 
 			assert.strictEqual(1, junctionid, "ActionJunction added is not valid");
 
@@ -49,12 +49,12 @@ describe("junctions", function() {
 
 	});
 
-	it("should create condition junction", function() {
+	it("should create condition junction", () => {
 
 		return container.get("conditionstypes").add({
 			"code": "conditiontype",
 			"name": "conditiontype"
-		}).then(function(conditiontype) {
+		}).then((conditiontype) => {
 
 			return container.get("conditions").add({
 				"type": conditiontype,
@@ -62,11 +62,11 @@ describe("junctions", function() {
 				"value": "condition"
 			});
 
-		}).then(function(condition) {
+		}).then((condition) => {
 
 			return container.get("junctions").createConditionJunctionId(condition);
 
-		}).then(function(junctionid) {
+		}).then((junctionid) => {
 
 			assert.strictEqual(2, junctionid, "ConditionJunction added is not valid");
 

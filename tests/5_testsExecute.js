@@ -3,84 +3,84 @@
 // deps
 
 	const	assert = require("assert"),
-			SimpleScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
+			NodeScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
 
 // tests
 
-describe("execute", function() {
+describe("execute", () => {
 
 	let container;
 
-	before(function() {
+	before(() => {
 
-		return SimpleScenarios.delete().then(function () {
-			return SimpleScenarios.init();
-		}).then(function (_container) {
+		return NodeScenarios.delete().then(() => {
+			return NodeScenarios.init();
+		}).then((_container) => {
 			container = _container;
 		});
 
 	});
 
-	after(function() {
-		return SimpleScenarios.delete();
+	after(() => {
+		return NodeScenarios.delete();
 	});
 
-	describe("prepare way", function() {
+	describe("prepare way", () => {
 
-		it("should create actions", function() {
+		it("should create actions", () => {
 
 			let actiontype;
 
-			return container.get("actionstypes").add({ code: "CONSOLE", "name" : "console" }).then(function(_actiontype) {
+			return container.get("actionstypes").add({ code: "CONSOLE", "name" : "console" }).then((_actiontype) => {
 				actiontype = _actiontype;
 				return container.get("actions").add({ "name": "console yes", "type": actiontype, "params": "\"yes\"" });
-			}).then(function() {
+			}).then(() => {
 				return container.get("actions").add({ "name": "console no", "type": actiontype, "params": "\"no\"" });
 			});
 
 		});
 
-		it("should create conditions", function() {
+		it("should create conditions", () => {
 
-			return container.get("conditionstypes").add({ code: "BOOLEQUAL", "name" : "equal" }).then(function(conditiontype) {
+			return container.get("conditionstypes").add({ code: "BOOLEQUAL", "name" : "equal" }).then((conditiontype) => {
 				return container.get("conditions").add({ "name": "true", "type": conditiontype, "value": "true" });
 			});
 
 		});
 
-		it("should create scenario", function() {
+		it("should create scenario", () => {
 
-			return container.get("conditions").last().then(function() {
+			return container.get("conditions").last().then(() => {
 				return container.get("scenarios").add({ "name": "test", "active": true });
 			});
 
 		});
 
-		it("should link scenario to condition", function() {
+		it("should link scenario to condition", () => {
 
 			let condition;
 
-			return container.get("conditions").last().then(function(_condition) {
+			return container.get("conditions").last().then((_condition) => {
 				condition = _condition;
 				return container.get("scenarios").last();
-			}).then(function(scenario) {
+			}).then((scenario) => {
 				return container.get("scenarios").linkStartCondition(scenario, condition);
 			});
 
 		});
 
-		it("should link condition to actions", function() {
+		it("should link condition to actions", () => {
 
 			let condition;
 
-			return container.get("conditions").last().then(function(_condition) {
+			return container.get("conditions").last().then((_condition) => {
 				condition = _condition;
 				return container.get("actions").searchOne({ name: "console yes" });
-			}).then(function(onyes) {
+			}).then((onyes) => {
 				return container.get("conditions").linkOnYesAction(condition, onyes);
-			}).then(function() {
+			}).then(() => {
 				return container.get("actions").searchOne({ name: "console no" });
-			}).then(function(onno) {
+			}).then((onno) => {
 				return container.get("conditions").linkOnNoAction(condition, onno);
 			});
 
@@ -88,13 +88,13 @@ describe("execute", function() {
 
 	});
 
-	describe("return way", function() {
+	describe("return way", () => {
 
-		it("should test an inexistant scenario", function() {
+		it("should test an inexistant scenario", () => {
 
-			return container.get("scenarios").getWay({ id: 10 }).then(function() {
+			return container.get("scenarios").getWay({ id: 10 }).then(() => {
 				return Promise.reject("The scenario was found");
-			}).catch(function(err) {
+			}).catch((err) => {
 				assert.strictEqual("Impossible to find this scenario.", err, "Error returned is not valid");
 				return Promise.resolve();
 			});
@@ -102,13 +102,13 @@ describe("execute", function() {
 		});
 
 
-		it("should return a builded way", function() {
+		it("should return a builded way", () => {
 
-			return container.get("conditions").last().then(function() {
+			return container.get("conditions").last().then(() => {
 				return container.get("scenarios").last();
-			}).then(function(scenario) {
+			}).then((scenario) => {
 				return container.get("scenarios").getWay(scenario);
-			}).then(function(scenario) {
+			}).then((scenario) => {
 
 				assert.strictEqual("scenario", scenario.nodetype, "Scenario returned is not valid (nodetype)");
 				assert.strictEqual("test", scenario.name, "Scenario returned is not valid (name)");
@@ -153,16 +153,16 @@ describe("execute", function() {
 
 		});
 
-		it("should execute a scenario", function() {
+		it("should execute a scenario", () => {
 
-			container.get("conditionstypes").searchOne({ code: "BOOLEQUAL" }).then(function(conditiontype) {
+			container.get("conditionstypes").searchOne({ code: "BOOLEQUAL" }).then((conditiontype) => {
 
 				if (!conditiontype) {
 					return Promise.reject("There is no conditiontype with \"BOOLEQUAL\" code.");
 				}
 				else {
 
-					return container.get("conditions").bindExecuter(conditiontype, function(condition, data) {
+					return container.get("conditions").bindExecuter(conditiontype, (condition, data) => {
 
 						if ("undefined" === typeof data.condition) {
 							return Promise.reject("There is no \"condition\" data.");
@@ -178,9 +178,9 @@ describe("execute", function() {
 
 				}
 
-			}).then(function() {
+			}).then(() => {
 				return container.get("actionstypes").searchOne({ code: "CONSOLE" });
-			}).then(function(actiontype) {
+			}).then((actiontype) => {
 
 				if (!actiontype) {
 					return Promise.reject("There is no actiontype with \"CONSOLE\" code.");
@@ -189,7 +189,7 @@ describe("execute", function() {
 
 					let cn = console;
 
-					return container.get("actions").bindExecuter(actiontype, function(action) {
+					return container.get("actions").bindExecuter(actiontype, (action) => {
 
 						cn.log(action.params);
 						return Promise.resolve();
@@ -198,17 +198,17 @@ describe("execute", function() {
 
 				}
 
-			}).then(function() {
+			}).then(() => {
 				return container.get("scenarios").last();
-			}).then(function(scenario) {
+			}).then((scenario) => {
 
 				return container.get("scenarios").execute(scenario, {
 					condition: true
 				});
 
-			}).then(function() {
+			}).then(() => {
 				return container.get("scenarios").last();
-			}).then(function(scenario) {
+			}).then((scenario) => {
 
 				return container.get("scenarios").execute(scenario, {
 					condition: false

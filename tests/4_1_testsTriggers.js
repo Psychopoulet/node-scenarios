@@ -3,89 +3,89 @@
 // deps
 
 	const 	assert = require("assert"),
-			SimpleScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
+			NodeScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
 
 // tests
 
-describe("triggers", function() {
+describe("triggers", () => {
 
 	let container;
 
-	before(function() {
+	before(() => {
 
-		return SimpleScenarios.delete().then(function () {
-			return SimpleScenarios.init();
-		}).then(function (_container) {
+		return NodeScenarios.delete().then(() => {
+			return NodeScenarios.init();
+		}).then((_container) => {
 			container = _container;
 		});
 
 	});
 
-	after(function() {
-		return SimpleScenarios.delete();
+	after(() => {
+		return NodeScenarios.delete();
 	});
 
-	it("should create data", function() {
+	it("should create data", () => {
 
 		return container.get("triggers").add({
 			"code": "test",
 			"name": "test"
-		}).then(function(trigger) {
+		}).then((trigger) => {
 			assert.strictEqual("test", trigger.code, "Trigger added is not valid (code)");
 			assert.strictEqual("test", trigger.name, "Trigger added is not valid (name)");
 		});
 
 	});
 
-	it("should return the last inserted data", function() {
+	it("should return the last inserted data", () => {
 
-		return container.get("triggers").last().then(function(trigger) {
+		return container.get("triggers").last().then((trigger) => {
 			assert.strictEqual("test", trigger.code, "Trigger added is not valid (code)");
 			assert.strictEqual("test", trigger.name, "Trigger added is not valid (name)");
 		});
 
 	});
 
-	it("should return all the data with the code \"test\"", function() {
+	it("should return all the data with the code \"test\"", () => {
 
-		return container.get("triggers").search({ "code": "test" }).then(function(triggers) {
+		return container.get("triggers").search({ "code": "test" }).then((triggers) => {
 			assert.strictEqual(1, triggers.length, "Triggers returned are not valid");
 		});
 
 	});
 
-	it("should return all the data with the name \"test\"", function() {
+	it("should return all the data with the name \"test\"", () => {
 
-		return container.get("triggers").search({ "name": "test" }).then(function(triggers) {
+		return container.get("triggers").search({ "name": "test" }).then((triggers) => {
 			assert.strictEqual(1, triggers.length, "Triggers returned are not valid");
 		});
 
 	});
 
-	it("should return one data with the code \"test\"", function() {
+	it("should return one data with the code \"test\"", () => {
 
-		return container.get("triggers").searchOne({ "code": "test" }).then(function(trigger) {
+		return container.get("triggers").searchOne({ "code": "test" }).then((trigger) => {
 			assert.notStrictEqual(null, trigger, "Trigger returned is not valid");
 		});
 
 	});
 
-	it("should edit last inserted data", function() {
+	it("should edit last inserted data", () => {
 
-		return container.get("triggers").last().then(function(trigger) {
+		return container.get("triggers").last().then((trigger) => {
 			trigger.name = "test2";
 			return container.get("triggers").edit(trigger);
-		}).then(function(trigger) {
+		}).then((trigger) => {
 			assert.strictEqual("test2", trigger.name, "Trigger returned is not valid");
 		});
 
 	});
 
-	it("should link to scenario", function() {
+	it("should link to scenario", () => {
 
-		return container.get("scenarios").add({ name: "test", code: "test" }).then(function(scenario) {
+		return container.get("scenarios").add({ name: "test", code: "test" }).then((scenario) => {
 
-			return container.get("triggers").last().then(function(trigger) {
+			return container.get("triggers").last().then((trigger) => {
 				return container.get("triggers").linkToScenario(scenario, trigger);
 			});
 
@@ -93,11 +93,11 @@ describe("triggers", function() {
 		
 	});
 
-	it("should get linked scenarios", function() {
+	it("should get linked scenarios", () => {
 
-		return container.get("triggers").last().then(function(trigger) {
+		return container.get("triggers").last().then((trigger) => {
 			return container.get("scenarios").search({ trigger: trigger });
-		}).then(function(scenarios) {
+		}).then((scenarios) => {
 
 			assert.strictEqual(true, scenarios instanceof Array, "Returned value is not an Array");
 			assert.strictEqual(1, scenarios.length, "There is no linked scenarios");
@@ -106,11 +106,11 @@ describe("triggers", function() {
 
 	});
 
-	it("should unlink to scenario", function() {
+	it("should unlink to scenario", () => {
 
-		return container.get("scenarios").last().then(function(scenario) {
+		return container.get("scenarios").last().then((scenario) => {
 
-			return container.get("triggers").last().then(function(trigger) {
+			return container.get("triggers").last().then((trigger) => {
 				return container.get("triggers").unlinkToScenario(scenario, trigger);
 			});
 			
@@ -118,11 +118,11 @@ describe("triggers", function() {
 		
 	});
 
-	it("should get linked scenarios", function() {
+	it("should get linked scenarios", () => {
 
-		return container.get("triggers").last().then(function(trigger) {
+		return container.get("triggers").last().then((trigger) => {
 			return container.get("scenarios").search({ trigger: trigger });
-		}).then(function(scenarios) {
+		}).then((scenarios) => {
 
 			assert.strictEqual(true, scenarios instanceof Array, "Returned value is not an Array");
 			assert.strictEqual(0, scenarios.length, "There is no linked scenarios");
@@ -131,21 +131,21 @@ describe("triggers", function() {
 
 	});
 
-	it("should execute linked scenarios", function() {
+	it("should execute linked scenarios", () => {
 
-		return container.get("triggers").last().then(function(trigger) {
+		return container.get("triggers").last().then((trigger) => {
 			return container.get("triggers").execute(trigger, {});
 		});
 
 	});
 
-	it("should delete last inserted data", function() {
+	it("should delete last inserted data", () => {
 
-		return container.get("triggers").last().then(function(trigger) {
+		return container.get("triggers").last().then((trigger) => {
 			return container.get("triggers").delete(trigger);
-		}).then(function() {
+		}).then(() => {
 			return container.get("triggers").last();
-		}).then(function(trigger) {
+		}).then((trigger) => {
 			assert.strictEqual(null, trigger, "Trigger returned is not valid");
 		});
 

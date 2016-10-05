@@ -3,41 +3,48 @@
 // deps
 
 	const 	assert = require("assert"),
-			SimpleScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
+			NodeScenarios = require(require("path").join(__dirname, "..", "lib", "main.js"));
 
 // tests
 
-describe("actions", function() {
+describe("actions", () => {
 
 	let container;
 
-	before(function() {
+	before(() => {
 
-		return SimpleScenarios.delete().then(function () {
-			return SimpleScenarios.init();
-		}).then(function (_container) {
+		return NodeScenarios.delete().then(() => {
+			return NodeScenarios.init();
+		}).then((_container) => {
 			container = _container;
 		});
 
 	});
 
-	after(function() {
-		return SimpleScenarios.delete();
+	after(() => {
+		return NodeScenarios.delete();
 	});
 
-	it("should create data", function() {
+	it("should create data", () => {
 
 		return container.get("actionstypes").add({
 			"code": "actiontype",
 			"name": "actiontype"
-		}).then(function(actiontype) {
+		}).then((actiontype) => {
 
 			return container.get("actions").add({
 				"type": actiontype,
-				"name": "actionbase"
+				"name": "actionbase1"
+			}).then((actiontype) => {
+
+				return container.get("actions").add({
+					"type": actiontype,
+					"name": "actionbase"
+				});
+
 			});
 
-		}).then(function(action) {
+		}).then((action) => {
 
 			assert.strictEqual("actionbase", action.name, "Action added is not valid (name)");
 			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
@@ -48,9 +55,9 @@ describe("actions", function() {
 
 	});
 
-	it("should create data with string params", function() {
+	it("should create data with string params", () => {
 
-		return container.get("actionstypes").searchOne({ "code": "actiontype" }).then(function(actiontype) {
+		return container.get("actionstypes").searchOne({ "code": "actiontype" }).then((actiontype) => {
 
 			return container.get("actions").add({
 				"type": actiontype,
@@ -58,7 +65,7 @@ describe("actions", function() {
 				"params": "{\"test\": \"test\"}"
 			});
 
-		}).then(function(action) {
+		}).then((action) => {
 
 			assert.strictEqual("actionbasewithstringparams", action.name, "Action added is not valid (name)");
 			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
@@ -69,9 +76,9 @@ describe("actions", function() {
 
 	});
 
-	it("should create data with object params", function() {
+	it("should create data with object params", () => {
 
-		return container.get("actionstypes").searchOne({ "code": "actiontype" }).then(function(actiontype) {
+		return container.get("actionstypes").searchOne({ "code": "actiontype" }).then((actiontype) => {
 
 			return container.get("actions").add({
 				"type": actiontype,
@@ -79,7 +86,7 @@ describe("actions", function() {
 				"params": {"test": "test"}
 			});
 
-		}).then(function(action) {
+		}).then((action) => {
 
 			assert.strictEqual("actionbasewithobjectparams", action.name, "Action added is not valid (name)");
 			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
@@ -90,9 +97,9 @@ describe("actions", function() {
 
 	});
 
-	it("should return the last inserted data", function() {
+	it("should return the last inserted data", () => {
 
-		return container.get("actions").last().then(function(action) {
+		return container.get("actions").last().then((action) => {
 
 			assert.strictEqual("actionbasewithobjectparams", action.name, "Action added is not valid (name)");
 			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
@@ -103,97 +110,167 @@ describe("actions", function() {
 
 	});
 
-	it("should return all the data with the name \"actionbase\"", function() {
+	it("should return all the data with the name \"actionbase\"", () => {
 
-		return container.get("actions").search({ "name": "actionbase" }).then(function(actions) {
+		return container.get("actions").search({ "name": "actionbase" }).then((actions) => {
 			assert.strictEqual(1, actions.length, "Actions returned are not valid");
 		});
 
 	});
 
-	it("should return one data with the name \"actionbase\"", function() {
+	it("should return one data with the name \"actionbase\"", () => {
 
-		return container.get("actions").searchOne({ "name": "actionbase" }).then(function(action) {
+		return container.get("actions").searchOne({ "name": "actionbase" }).then((action) => {
 			assert.notStrictEqual(null, action, "Action returned is not valid");
 		});
 
 	});
 
-	it("should return all the data with the action type having the code \"actiontype\"", function() {
+	it("should return all the data with the action type having the code \"actiontype\"", () => {
 
-		return container.get("actions").search({ "type": { "code": "actiontype" } }).then(function(actions) {
-			assert.strictEqual(3, actions.length, "Actions returned are not valid");
+		return container.get("actions").search({ "type": { "code": "actiontype" } }).then((actions) => {
+			assert.strictEqual(4, actions.length, "Actions returned are not valid");
 		});
 
 	});
 
-	it("should return all the data with the action type having the name \"actiontype\"", function() {
+	it("should return all the data with the action type having the name \"actiontype\"", () => {
 
-		return container.get("actions").search({ "type": { "name": "actiontype" } }).then(function(actions) {
-			assert.strictEqual(3, actions.length, "Actions returned are not valid");
+		return container.get("actions").search({ "type": { "name": "actiontype" } }).then((actions) => {
+			assert.strictEqual(4, actions.length, "Actions returned are not valid");
 		});
 
 	});
 
-	it("should edit last inserted data", function() {
+	it("should return multiples ids", () => {
 
-		return container.get("actions").last().then(function(action) {
+		return container.get("actions").search().then((actions) => {
+
+			let ids = [];
+			actions.forEach((action) => {
+				ids.push(action.id);
+			});
+
+			return container.get("actions").search({ ids: ids }).then((actions) => {
+
+				assert.notStrictEqual(null, actions, "Actions returned are not valid");
+				assert.strictEqual(4, actions.length, "Actions returned are not valid");
+
+			});
+			
+		});
+
+	});
+
+	it("should edit last inserted data", () => {
+
+		return container.get("actions").last().then((action) => {
 			action.name = "test2";
 			return container.get("actions").edit(action);
-		}).then(function(action) {
+		}).then((action) => {
 			assert.strictEqual("test2", action.name, "Action returned is not valid");
 		});
 
 	});
 
-	it("should bind wrong executer", function() {
+	it("should bind wrong executer", () => {
 
-		return container.get("actionstypes").last().then(function(actiontype) {
+		return container.get("actionstypes").last().then((actiontype) => {
 			return container.get("actions").bindExecuter(actiontype);
-		}).then(function() {
+		}).then(() => {
 			assert.ok(false, "Wrong executer does not generate error");
-		}).catch(function(err) {
+		}).catch((err) => {
 			assert.strictEqual("string", typeof err, "Wrong executer generate incorrect error");
 			return Promise.resolve();
 		});
 
 	});
 
-	it("should bind executer with wrong actiontype", function() {
+	it("should bind executer with wrong actiontype", () => {
 
-		return container.get("actions").bindExecuter({}).then(function() {
+		return container.get("actions").bindExecuter({}).then(() => {
 			assert.ok(false, "Wrong executer does not generate error");
-		}).catch(function(err) {
+		}).catch((err) => {
 			assert.strictEqual("string", typeof err, "Wrong executer generate incorrect error");
 			return Promise.resolve();
 		});
 
 	});
 
-	it("should bind executer", function() {
+	it("should bind executer", () => {
 
-		return container.get("actionstypes").last().then(function(actiontype) {
+		return container.get("actionstypes").last().then((actiontype) => {
 
-			return container.get("actions").bindExecuter(actiontype, function(action) {
+			return container.get("actions").bindExecuter(actiontype, (action) => {
 				assert.strictEqual("test2", action.name, "Action returned is not valid");
 				return Promise.resolve();
 			});
 
-		}).then(function() {
+		}).then(() => {
 			return container.get("actions").last();
-		}).then(function(action) {
+		}).then((action) => {
 			return container.get("actions").execute(action);
 		});
 
 	});
 
-	it("should delete last inserted data", function() {
+	it("should link to trigger", () => {
 
-		return container.get("actions").last().then(function(action) {
+		return container.get("triggers").add({ name: "test", code: "test" }).then((trigger) => {
+			
+			return container.get("actions").last().then((action) => {
+				return container.get("actions").linkToTrigger(action, trigger);
+			});
+
+		});
+		
+	});
+
+	it("should return linked triggers", () => {
+
+		return container.get("actions").last().then((action) => {
+			return container.get("triggers").search({ action: action });
+		}).then((triggers) => {
+
+			assert.strictEqual(true, triggers instanceof Array, "Returned value is not an Array");
+			assert.strictEqual(1, triggers.length, "There is no linked triggers");
+
+		});
+
+	});
+
+	it("should unlink to trigger", () => {
+
+		return container.get("triggers").last().then((trigger) => {
+			
+			return container.get("actions").last().then((action) => {
+				return container.get("actions").unlinkToTrigger(action, trigger);
+			});
+
+		});
+		
+	});
+
+	it("should return linked triggers", () => {
+
+		return container.get("actions").last().then((action) => {
+			return container.get("triggers").search({ action: action });
+		}).then((triggers) => {
+
+			assert.strictEqual(true, triggers instanceof Array, "Returned value is not an Array");
+			assert.strictEqual(0, triggers.length, "There is no linked triggers");
+
+		});
+
+	});
+
+	it("should delete last inserted data", () => {
+
+		return container.get("actions").last().then((action) => {
 			return container.get("actions").delete(action);
-		}).then(function() {
+		}).then(() => {
 			return container.get("actions").last();
-		}).then(function(action) {
+		}).then((action) => {
 
 			assert.strictEqual("actionbasewithstringparams", action.name, "Action returned is not valid (name)");
 			assert.strictEqual("actiontype", action.type.code, "Action returned is not valid (type code)");
@@ -204,30 +281,30 @@ describe("actions", function() {
 
 	});
 
-	it("should create data with action", function() {
+	it("should create data with action", () => {
 
 		let actionBase;
 
-		return container.get("actionstypes").last().then(function(actiontype) {
+		return container.get("actionstypes").last().then((actiontype) => {
 
 			return container.get("actions").add({
 				"type": actiontype,
 				"name": "actionbase"
 			});
 
-		}).then(function(action) {
+		}).then((action) => {
 			actionBase = action;
 			return container.get("actionstypes").last();
-		}).then(function(actiontype) {
+		}).then((actiontype) => {
 
 			return container.get("actions").add({
 				type: actiontype,
 				name: "actionafter"
 			});
 
-		}).then(function(actionafter) {
+		}).then((actionafter) => {
 			return container.get("actions").linkAfterAction(actionBase, actionafter);
-		}).then(function(action) {
+		}).then((action) => {
 
 			assert.strictEqual("actionbase", action.name, "Action added is not valid (name)");
 			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
@@ -237,7 +314,7 @@ describe("actions", function() {
 
 			return container.get("actions").unlinkAfter(actionBase);
 
-		}).then(function(action) {
+		}).then((action) => {
 
 			assert.strictEqual("actionbase", action.name, "Action added is not valid (name)");
 			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
@@ -249,11 +326,11 @@ describe("actions", function() {
 
 	});
 
-	it("should create data with condition", function() {
+	it("should create data with condition", () => {
 
 		let actionBase;
 
-		return container.get("actions").search().then(function(actions) {
+		return container.get("actions").search().then((actions) => {
 
 			actionBase = actions[1];
 
@@ -262,7 +339,7 @@ describe("actions", function() {
 				"name": "conditiontype"
 			});
 
-		}).then(function(conditiontype) {
+		}).then((conditiontype) => {
 
 			return container.get("conditions").add({
 				type: conditiontype,
@@ -270,9 +347,9 @@ describe("actions", function() {
 				value: "test"
 			});
 
-		}).then(function(conditionafter) {
+		}).then((conditionafter) => {
 			return container.get("actions").linkAfterCondition(actionBase, conditionafter);
-		}).then(function(action) {
+		}).then((action) => {
 
 			assert.strictEqual("actionbase", action.name, "Action added is not valid (name)");
 			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
@@ -282,7 +359,7 @@ describe("actions", function() {
 
 			return container.get("actions").unlinkAfter(actionBase);
 
-		}).then(function(action) {
+		}).then((action) => {
 
 			assert.strictEqual("actionbase", action.name, "Action added is not valid (name)");
 			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
