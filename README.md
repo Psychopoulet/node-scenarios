@@ -42,6 +42,9 @@ $ npm install node-scenarios
 
 ### triggers
 
+- ``` linkToAction(object action, object trigger) : return Promise instance ``` link a action and a trigger
+- ``` unlinkToAction(object action, object trigger) : return Promise instance ``` unlink a action and a trigger
+
 - ``` linkToScenario(object scenario, object trigger) : return Promise instance ``` link a scenario and a trigger
 - ``` unlinkToScenario(object scenario, object trigger) : return Promise instance ``` unlink a scenario and a trigger
 
@@ -59,6 +62,9 @@ $ npm install node-scenarios
 - ``` execute(object scenario, object externaldata) : return Promise instance ``` execute the scenario
 
 ### actions
+
+- ``` linkToTrigger(object action, object trigger) : return Promise instance ``` link a action and a trigger
+- ``` unlinkToTrigger(object action, object trigger) : return Promise instance ``` unlink a action and a trigger
 
 - ``` linkAfterAction(object action, object linkedaction) : return Promise instance => then(object action) ``` unlinkAfter && link an action to the action
 - ``` linkAfterCondition(object action, object linkedcondition) : return Promise instance => then(object action) ``` unlinkAfter && link a condition to the action

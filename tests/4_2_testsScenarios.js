@@ -176,7 +176,7 @@ describe("scenarios", () => {
 		
 	});
 
-	it("should get linked triggers", () => {
+	it("should return linked triggers", () => {
 
 		return container.get("scenarios").last().then((scenario) => {
 			return container.get("triggers").search({ scenario: scenario });
@@ -201,7 +201,7 @@ describe("scenarios", () => {
 		
 	});
 
-	it("should get linked triggers", () => {
+	it("should return linked triggers", () => {
 
 		return container.get("scenarios").last().then((scenario) => {
 			return container.get("triggers").search({ scenario: scenario });

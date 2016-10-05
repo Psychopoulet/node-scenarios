@@ -33,8 +33,6 @@ CREATE TABLE IF NOT EXISTS scenariostriggers (
 
 );
 
-
-
 -- actions
 
 CREATE TABLE IF NOT EXISTS actionstypes (
@@ -54,6 +52,19 @@ CREATE TABLE IF NOT EXISTS actions (
 
 	FOREIGN KEY (id_after) REFERENCES junctions(id) ON DELETE SET NULL ON UPDATE CASCADE,
 	FOREIGN KEY (id_type) REFERENCES actionstypes(id) ON DELETE CASCADE ON UPDATE CASCADE
+
+);
+
+-- actionstriggers
+
+CREATE TABLE IF NOT EXISTS actionstriggers (
+
+	id_action INTEGER NOT NULL,
+	id_trigger INTEGER NOT NULL,
+
+	PRIMARY KEY (id_action, id_trigger),
+	FOREIGN KEY (id_action) REFERENCES actions(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (id_trigger) REFERENCES triggers(id) ON DELETE CASCADE ON UPDATE CASCADE
 
 );
 

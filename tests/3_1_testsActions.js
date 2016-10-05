@@ -214,6 +214,56 @@ describe("actions", () => {
 
 	});
 
+	it("should link to trigger", () => {
+
+		return container.get("triggers").add({ name: "test", code: "test" }).then((trigger) => {
+			
+			return container.get("actions").last().then((action) => {
+				return container.get("actions").linkToTrigger(action, trigger);
+			});
+
+		});
+		
+	});
+
+	it("should return linked triggers", () => {
+
+		return container.get("actions").last().then((action) => {
+			return container.get("triggers").search({ action: action });
+		}).then((triggers) => {
+
+			assert.strictEqual(true, triggers instanceof Array, "Returned value is not an Array");
+			assert.strictEqual(1, triggers.length, "There is no linked triggers");
+
+		});
+
+	});
+
+	it("should unlink to trigger", () => {
+
+		return container.get("triggers").last().then((trigger) => {
+			
+			return container.get("actions").last().then((action) => {
+				return container.get("actions").unlinkToTrigger(action, trigger);
+			});
+
+		});
+		
+	});
+
+	it("should return linked triggers", () => {
+
+		return container.get("actions").last().then((action) => {
+			return container.get("triggers").search({ action: action });
+		}).then((triggers) => {
+
+			assert.strictEqual(true, triggers instanceof Array, "Returned value is not an Array");
+			assert.strictEqual(0, triggers.length, "There is no linked triggers");
+
+		});
+
+	});
+
 	it("should delete last inserted data", () => {
 
 		return container.get("actions").last().then((action) => {
