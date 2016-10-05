@@ -7,41 +7,41 @@
 
 // tests
 
-describe("junctions", function() {
+describe("junctions", () => {
 
 	let container;
 
-	before(function() {
+	before(() => {
 
-		return NodeScenarios.delete().then(function () {
+		return NodeScenarios.delete().then(() => {
 			return NodeScenarios.init();
-		}).then(function (_container) {
+		}).then((_container) => {
 			container = _container;
 		});
 
 	});
 
-	after(function() {
+	after(() => {
 		return NodeScenarios.delete();
 	});
 
-	it("should create action junction", function() {
+	it("should create action junction", () => {
 
 		return container.get("actionstypes").add({
 			"code": "actiontype",
 			"name": "actiontype"
-		}).then(function(actiontype) {
+		}).then((actiontype) => {
 
 			return container.get("actions").add({
 				"type": actiontype,
 				"name": "action"
 			});
 
-		}).then(function(action) {
+		}).then((action) => {
 
 			return container.get("junctions").createActionJunctionId(action);
 
-		}).then(function(junctionid) {
+		}).then((junctionid) => {
 
 			assert.strictEqual(1, junctionid, "ActionJunction added is not valid");
 
@@ -49,12 +49,12 @@ describe("junctions", function() {
 
 	});
 
-	it("should create condition junction", function() {
+	it("should create condition junction", () => {
 
 		return container.get("conditionstypes").add({
 			"code": "conditiontype",
 			"name": "conditiontype"
-		}).then(function(conditiontype) {
+		}).then((conditiontype) => {
 
 			return container.get("conditions").add({
 				"type": conditiontype,
@@ -62,11 +62,11 @@ describe("junctions", function() {
 				"value": "condition"
 			});
 
-		}).then(function(condition) {
+		}).then((condition) => {
 
 			return container.get("junctions").createConditionJunctionId(condition);
 
-		}).then(function(junctionid) {
+		}).then((junctionid) => {
 
 			assert.strictEqual(2, junctionid, "ConditionJunction added is not valid");
 

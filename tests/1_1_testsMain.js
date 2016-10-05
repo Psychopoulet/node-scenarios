@@ -10,17 +10,17 @@
 
 // tests
 
-describe("main without given file", function() {
+describe("main without given file", () => {
 
-	before(function() {
+	before(() => {
 		return NodeScenarios.delete();
 	});
 
-	it("should create database", function(done) {
+	it("should create database", (done) => {
 
-		NodeScenarios.init().then(function (container) {
+		NodeScenarios.init().then((container) => {
 
-			fs.stat(path.join(__dirname, "..", "lib", "database.sqlite3"), function(err, stats) {
+			fs.stat(path.join(__dirname, "..", "lib", "database.sqlite3"), (err, stats) => {
 
 				assert.strictEqual(true, (!err && stats && stats.isFile()), "Database was not created.");
 
@@ -51,29 +51,29 @@ describe("main without given file", function() {
 
 	}).timeout(5000);
 
-	it("should release database", function() {
+	it("should release database", () => {
 		return NodeScenarios.release();
 	});
 
-	it("should delete database", function() {
+	it("should delete database", () => {
 		return NodeScenarios.delete();
 	});
 
 });
 
-describe("main with given file", function() {
+describe("main with given file", () => {
 
-	before(function() {
+	before(() => {
 		return NodeScenarios.delete();
 	});
 
-	it("should create database", function(done) {
+	it("should create database", (done) => {
 
 		let db = path.join(__dirname, "test.sqlite3");
 
-		NodeScenarios.init(db).then(function (container) {
+		NodeScenarios.init(db).then((container) => {
 
-			fs.stat(db, function(err, stats) {
+			fs.stat(db, (err, stats) => {
 
 				assert.strictEqual(true, (!err && stats && stats.isFile()), "Database was not created.");
 
@@ -104,11 +104,11 @@ describe("main with given file", function() {
 
 	}).timeout(5000);
 
-	it("should release database", function() {
+	it("should release database", () => {
 		return NodeScenarios.release();
 	});
 
-	it("should delete database", function() {
+	it("should delete database", () => {
 		return NodeScenarios.delete();
 	});
 
