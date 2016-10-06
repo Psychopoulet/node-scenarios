@@ -118,7 +118,7 @@ describe("execute", () => {
 
 					assert.strictEqual("condition", scenario.start.nodetype, "Scenario returned is not valid (start nodetype)");
 					assert.strictEqual("true", scenario.start.name, "Scenario returned is not valid (start name)");
-					assert.strictEqual("true", scenario.start.value, "Scenario returned is not valid (start name)");
+					assert.strictEqual(true, scenario.start.value, "Scenario returned is not valid (start value)");
 					
 					assert.strictEqual("object", typeof scenario.start.type, "Scenario returned is not valid (start type)");
 
