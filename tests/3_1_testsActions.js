@@ -55,6 +55,27 @@ describe("actions", () => {
 
 	});
 
+	it("should create data with pure string params", () => {
+
+		return container.get("actionstypes").searchOne({ "code": "actiontype" }).then((actiontype) => {
+
+			return container.get("actions").add({
+				"type": actiontype,
+				"name": "actionbasewithspuretringparams",
+				"params": "test"
+			});
+
+		}).then((action) => {
+
+			assert.strictEqual("actionbasewithspuretringparams", action.name, "Action added is not valid (name)");
+			assert.strictEqual("actiontype", action.type.code, "Action added is not valid (type code)");
+			assert.strictEqual("actiontype", action.type.name, "Action added is not valid (type name)");
+			assert.deepStrictEqual("test", action.params, "Action added is not valid (params)");
+
+		});
+
+	});
+
 	it("should create data with string params", () => {
 
 		return container.get("actionstypes").searchOne({ "code": "actiontype" }).then((actiontype) => {
@@ -129,7 +150,7 @@ describe("actions", () => {
 	it("should return all the data with the action type having the code \"actiontype\"", () => {
 
 		return container.get("actions").search({ "type": { "code": "actiontype" } }).then((actions) => {
-			assert.strictEqual(4, actions.length, "Actions returned are not valid");
+			assert.strictEqual(5, actions.length, "Actions returned are not valid");
 		});
 
 	});
@@ -137,7 +158,7 @@ describe("actions", () => {
 	it("should return all the data with the action type having the name \"actiontype\"", () => {
 
 		return container.get("actions").search({ "type": { "name": "actiontype" } }).then((actions) => {
-			assert.strictEqual(4, actions.length, "Actions returned are not valid");
+			assert.strictEqual(5, actions.length, "Actions returned are not valid");
 		});
 
 	});
@@ -154,7 +175,7 @@ describe("actions", () => {
 			return container.get("actions").search({ ids: ids }).then((actions) => {
 
 				assert.notStrictEqual(null, actions, "Actions returned are not valid");
-				assert.strictEqual(4, actions.length, "Actions returned are not valid");
+				assert.strictEqual(5, actions.length, "Actions returned are not valid");
 
 			});
 			

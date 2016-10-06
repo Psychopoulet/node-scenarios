@@ -1,6 +1,6 @@
 {
   "name": "node-scenarios",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A simple way to manage scenarios, with customizable triggers/conditions/actions",
   "main": "lib/main.js",
   "scripts": {
@@ -23,8 +23,8 @@
     "url": "https://github.com/Psychopoulet/node-scenarios/issues"
   },
   "dependencies": {
-    "sqlite3": "^3.1.4",
-    "node-containerpattern": "^0.2.0"
+    "sqlite3": "^3.1.5",
+    "node-containerpattern": "^0.2.3"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
