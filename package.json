@@ -23,8 +23,8 @@
     "url": "https://github.com/Psychopoulet/node-scenarios/issues"
   },
   "dependencies": {
-    "sqlite3": "^3.1.4",
-    "node-containerpattern": "^0.2.0"
+    "sqlite3": "^3.1.5",
+    "node-containerpattern": "^0.2.3"
   },
   "devDependencies": {
     "gulp": "^3.9.1",

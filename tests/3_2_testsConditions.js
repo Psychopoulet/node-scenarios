@@ -56,10 +56,73 @@ describe("conditions", () => {
 
 	});
 
+	it("should create data with pure string value", () => {
+
+		return container.get("conditionstypes").searchOne({ "code": "conditiontype" }).then((conditiontype) => {
+
+			return container.get("conditions").add({
+				"type": conditiontype,
+				"name": "conditionbasewithspuretringparams",
+				"value": "test"
+			});
+
+		}).then((action) => {
+
+			assert.strictEqual("conditionbasewithspuretringparams", action.name, "Condition added is not valid (name)");
+			assert.strictEqual("conditiontype", action.type.code, "Condition added is not valid (type code)");
+			assert.strictEqual("conditiontype", action.type.name, "Condition added is not valid (type name)");
+			assert.deepStrictEqual("test", action.value, "Condition added is not valid (value)");
+
+		});
+
+	});
+
+	it("should create data with string value", () => {
+
+		return container.get("conditionstypes").searchOne({ "code": "conditiontype" }).then((conditiontype) => {
+
+			return container.get("conditions").add({
+				"type": conditiontype,
+				"name": "conditionbasewithstringparams",
+				"value": "{\"test\": \"test\"}"
+			});
+
+		}).then((action) => {
+
+			assert.strictEqual("conditionbasewithstringparams", action.name, "Condition added is not valid (name)");
+			assert.strictEqual("conditiontype", action.type.code, "Condition added is not valid (type code)");
+			assert.strictEqual("conditiontype", action.type.name, "Condition added is not valid (type name)");
+			assert.deepStrictEqual({"test": "test"}, action.value, "Condition added is not valid (value)");
+
+		});
+
+	});
+
+	it("should create data with object value", () => {
+
+		return container.get("conditionstypes").searchOne({ "code": "conditiontype" }).then((conditiontype) => {
+
+			return container.get("conditions").add({
+				"type": conditiontype,
+				"name": "conditionbasewithobjectparams",
+				"value": {"test": "test"}
+			});
+
+		}).then((action) => {
+
+			assert.strictEqual("conditionbasewithobjectparams", action.name, "Condition added is not valid (name)");
+			assert.strictEqual("conditiontype", action.type.code, "Condition added is not valid (type code)");
+			assert.strictEqual("conditiontype", action.type.name, "Condition added is not valid (type name)");
+			assert.deepStrictEqual({"test": "test"}, action.value, "Condition added is not valid (value)");
+
+		});
+
+	});
+
 	it("should return the last inserted data", () => {
 
 		return container.get("conditions").last().then((condition) => {
-			assert.strictEqual("test", condition.name, "Condition added is not valid (params)");
+			assert.strictEqual("conditionbasewithobjectparams", condition.name, "Condition added is not valid (name)");
 		});
 
 	});
@@ -83,7 +146,7 @@ describe("conditions", () => {
 	it("should return all the data with the condition type having the code \"conditiontype\"", () => {
 
 		return container.get("conditions").search({ "type": { "code": "conditiontype" } }).then((conditions) => {
-			assert.strictEqual(2, conditions.length, "Conditions returned are not valid");
+			assert.strictEqual(5, conditions.length, "Conditions returned are not valid");
 		});
 
 	});
@@ -91,7 +154,7 @@ describe("conditions", () => {
 	it("should return all the data with the condition type having the name \"conditiontype\"", () => {
 
 		return container.get("conditions").search({ "type": { "name": "conditiontype" } }).then((conditions) => {
-			assert.strictEqual(2, conditions.length, "Conditions returned are not valid");
+			assert.strictEqual(5, conditions.length, "Conditions returned are not valid");
 		});
 
 	});
@@ -108,7 +171,7 @@ describe("conditions", () => {
 			return container.get("conditions").search({ ids: ids }).then((conditions) => {
 
 				assert.notStrictEqual(null, conditions, "Conditions returned are not valid");
-				assert.strictEqual(2, conditions.length, "Conditions returned are not valid");
+				assert.strictEqual(5, conditions.length, "Conditions returned are not valid");
 
 			});
 			
@@ -139,13 +202,11 @@ describe("conditions", () => {
 			return container.get("conditions").last();
 		}).then((condition) => {
 
-			assert.notStrictEqual(null, condition, "Condition returned is not valid");
-			return container.get("conditions").delete(condition);
+			assert.strictEqual("conditionbasewithstringparams", condition.name, "Condition returned is not valid (name)");
+			assert.strictEqual("conditiontype", condition.type.code, "Condition returned is not valid (type code)");
+			assert.strictEqual("conditiontype", condition.type.name, "Condition returned is not valid (type name)");
+			assert.deepStrictEqual({"test": "test"}, condition.value, "Condition returned is not valid (value)");
 
-		}).then(() => {
-			return container.get("conditions").last();
-		}).then((condition) => {
-			assert.strictEqual(null, condition, "Condition returned is not valid");
 		});
 
 	});
