@@ -1,6 +1,6 @@
 {
   "name": "node-scenarios",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A simple way to manage scenarios, with customizable triggers/conditions/actions",
   "main": "lib/main.js",
   "scripts": {
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "sqlite3": "^3.1.5",
-    "node-containerpattern": "^0.2.3"
+    "node-containerpattern": "^0.2.4"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
