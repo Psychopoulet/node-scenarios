@@ -5,7 +5,7 @@
   "main": "lib/main.js",
   "scripts": {
     "start": "node lib/main.js",
-    "test": "gulp"
+    "test": "npm update && gulp"
   },
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "sqlite3": "^3.1.8",
-    "node-containerpattern": "^0.3.1"
+    "node-containerpattern": "^0.3.2"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
